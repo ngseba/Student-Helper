@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,6 +12,8 @@ namespace studentApp2.Models
         public string PostTitle { get; set; }
         public string PostBody { get; set; }
         public PostType PostType { get; set; }
+        public string AuthorName { get; set; }
+        public string AuthorId { get; set; }
 
         public GeneralPost GeneralPost;
         public YearPost YearPost;
@@ -24,7 +27,6 @@ namespace studentApp2.Models
         public int PostYear { get; set; }
         public PostType PostType { get; set; }
         public int GroupID { get; set; }
-
         public string GroupName { get; set; }
 
     }

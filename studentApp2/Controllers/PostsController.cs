@@ -106,6 +106,8 @@ namespace studentApp2.Controllers
             postViewModel.Post.PostType = postViewModel.PostType;
             if (ModelState.IsValid)
             {
+                postViewModel.Post.AuthorId = User.Identity.GetUserId();
+                postViewModel.Post.AuthorName = User.Identity.GetUserName();
                 db.Posts.Add(postViewModel.Post);
                 switch (postViewModel.Post.PostType)
                 {
