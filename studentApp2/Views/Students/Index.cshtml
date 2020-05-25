@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Student Index";
+}
+
+<h2>List of students</h2>
+
+<table class="table">
+    <tr>
+        <th>Student ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Group Name</th>
+        <th>Year of study</th>
+        <th>Username</th>
+    </tr>
+
+@foreach (var item in ViewBag.Students) {
+<tr>
+    <td>
+        @Html.Encode(item.StudentId)
+    </td>
+    <td>
+        @Html.Encode(item.Fname)
+    </td>
+    <td>
+        @Html.Encode(item.Lname)
+    </td>
+    <td>
+        @Html.Encode(item.GroupName)
+    </td>
+    <td>
+        @Html.Encode(item.YearOfStudy)
+    </td>
+    <td>
+        @Html.Encode(item.Username)
+    </td>
+    <td>
+        @Html.ActionLink("Edit", "Edit", new { id = item.StudentId }) |
+        @Html.ActionLink("Delete", "Delete", new { id = item.StudentId })
+    </td>
+
+</tr>
+}
+
+</table>

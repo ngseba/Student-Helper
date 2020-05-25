@@ -1,0 +1,38 @@
+﻿.article-container {
+    width: calc(100% - 40px);
+    background-color: rgba(200, 200, 200, 0.2);
+    padding: 30px 20px;
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+    border-radius: 15px 0 15px 0;
+    box-shadow: 1px 3px 7px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+}
+
+.article-container-title {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.icon {
+    height: 15px;
+    width: 15px;
+}
+
+.article-container-title-person {
+    margin: 0;
+    font-size: 16px;
+    margin-right: 15px;
+}
+
+.article-likes {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px
+}

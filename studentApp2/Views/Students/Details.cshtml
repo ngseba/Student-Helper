@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Student</h4>
+    <hr />
+    <dl class="dl-horizontal">
+    </dl>
+</div>
+<table>
+    <tr>
+        <td>Student ID:</td>
+        <td></td>
+        <td>
+            @Html.Encode(ViewBag.Student.StudentId)
+        </td>
+    </tr>
+    <tr>
+        <td>Name:</td>
+        <td></td>
+        <td>
+            @Html.Encode(ViewBag.Student.StudentName)
+        </td>
+    </tr>
+    <tr>
+        <td>User ID:</td>
+        <td></td>
+        <td>
+            @Html.Encode(ViewBag.Student.UId)
+        </td>
+    </tr>
+    <tr>
+        <td>Role:</td>
+        <td></td>
+        <td>
+            @Html.Encode(ViewBag.Role)
+        </td>
+    </tr>
+</table>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = ViewBag.Student.StudentId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

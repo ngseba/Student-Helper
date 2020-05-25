@@ -1,0 +1,41 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Course Name
+        </th>
+        <th>
+            Teacher First Name
+        </th>
+        <th>Teacher Last Name</th>
+        <th>Actions</th>
+    </tr>
+
+@foreach (var item in ViewBag.Display) {
+<tr>
+    <td>
+        @Html.Encode(item.CourseName)
+    </td>
+    <td>
+        @Html.Encode(item.FName)
+    </td>
+    <td>
+        @Html.Encode(item.LName)
+    </td>
+    <td>
+        @Html.ActionLink("Edit", "Edit", new { id = item.TCId }) |
+        @Html.ActionLink("Details", "Details", new { id = item.TCId }) |
+        @Html.ActionLink("Delete", "Delete", new { id = item.TCId })
+    </td>
+</tr>
+}
+
+</table>

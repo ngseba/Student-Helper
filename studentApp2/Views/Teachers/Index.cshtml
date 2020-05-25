@@ -1,0 +1,43 @@
+﻿
+@{
+    ViewBag.Title = "Teacher Index";
+}
+
+<h2>List of teachers</h2>
+
+<table class="table">
+    <tr>
+        <th>Teacher ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Username</th>
+        <th>Actions</th>
+    </tr>
+
+    @foreach (var item in ViewBag.Teachers)
+    {
+<tr>
+    <td>
+        @Html.Encode(item.Teacher.TeacherId)
+    </td>
+    <td>
+        @Html.Encode(item.Fname)
+    </td>
+    <td>
+        @Html.Encode(item.Lname)
+    </td>
+    <td>
+        @Html.Encode(item.Username)
+    </td>
+    <td>
+        @Html.ActionLink("Details", "Details", new { id = item.Teacher.TeacherId}) |
+        @if (User.IsInRole("Admin")) 
+        {
+            @Html.ActionLink("Edit", "Edit", new { id = item.Teacher.TeacherId })
+            @Html.ActionLink("Delete", "Delete", new { id = item.Teacher.TeacherId })
+        }
+    </td>
+</tr>
+    }
+
+</table>

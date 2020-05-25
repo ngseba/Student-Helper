@@ -1,0 +1,34 @@
+﻿
+@{
+    ViewBag.Title = "Contacts";
+}
+
+<h2>Contacts</h2>
+
+<table class="table">
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email address</th>
+        <th>Phone number</th>
+    </tr>
+
+    @foreach (var item in ViewBag.Contacts)
+    {
+        <tr>
+            <td>
+                @Html.Encode(item.Firstname)
+            </td>
+            <td>
+                @Html.Encode(item.Lastname)
+            </td>
+            <td>
+                @Html.Encode(item.Email)
+            </td>
+            <td>
+                @Html.Encode(item.PhoneNo)
+            </td>
+        </tr>
+    }
+
+</table>

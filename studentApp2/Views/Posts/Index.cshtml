@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Post title
+        </th>
+        <th>
+            Post content
+        </th>
+        <th>
+            Post type
+        </th>
+        <th>
+            Target (depending on type)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in ViewBag.posts) {
+<tr>
+    <td>
+        @Html.Encode(item.Post.PostTitle)
+    </td>
+    <td>
+        @Html.Encode(item.Post.PostBody)
+    </td>
+    <td>
+        @Html.Encode(item.Post.PostType)
+    </td>
+    <td>
+        @Html.Encode(item.GroupName)
+    </td>
+    <td>
+        @Html.ActionLink("Edit", "Edit", new { id = item.Post.PostID }) |
+        @Html.ActionLink("Delete", "Delete", new { id = item.Post.PostID })
+    </td>
+</tr>
+}
+
+</table>

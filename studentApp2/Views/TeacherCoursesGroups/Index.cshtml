@@ -1,0 +1,51 @@
+﻿@model IEnumerable<studentApp2.Models.TeacherCoursesGroup>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Group name
+        </th>
+        <th>
+            Course name
+        </th>
+        <th>
+            First name
+        </th>
+        <th>
+            Last name
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in ViewBag.Display) {
+<tr>
+    <td>
+        @Html.Encode(item.groupName)
+    </td>
+    <td>
+        @Html.Encode(item.tName.CourseName)
+    </td>
+    <td>
+        @Html.Encode(item.tName.FName)
+    </td>
+    <td>
+        @Html.Encode(item.tName.LName)
+    </td>
+    <td>
+        @Html.ActionLink("Edit", "Edit", new { id = item.TeacherCourseGroupID }) |
+        @Html.ActionLink("Details", "Details", new { id = item.TeacherCourseGroupID }) |
+        @Html.ActionLink("Delete", "Delete", new { id = item.TeacherCourseGroupID })
+    </td>
+</tr>
+}
+
+</table>

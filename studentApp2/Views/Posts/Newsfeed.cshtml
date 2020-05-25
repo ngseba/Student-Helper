@@ -1,0 +1,33 @@
+﻿@model  studentApp2.Models.Post
+@{
+    ViewBag.Title = "Newsfeed";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @section Style {
+        <link href="@Url.Content("~/Style/StyleSheet1.css")" rel="stylesheet" type="text/css" />
+    }
+}
+
+<title>Announcements</title>
+<h2>Announcements</h2>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<ul>
+    @foreach (var article in ViewBag.Posts)
+    {
+        <div class="article-container">
+            <div class="article-container-title">
+            <h1 class="article-container-title-person">Category: @article.PostType.ToString()</h1>
+            <div class="icon"><img height="16" width="16" src="https://p7.hiclipart.com/preview/340/956/944/computer-icons-user-profile-head-ico-download.jpg"></div>
+        </div>
+        <div class="article-container-content">
+            <h1 style="font-size:18px;">@article.PostTitle</h1>
+            <h2 style="font-size:14px;">@article.PostBody</h2>
+        </div>
+        <div class="article-likes">
+           <div style="margin-right:3px;">0</div>
+           <div style="margin-left:3px;"><img height="16" width="16" src="https://image.flaticon.com/icons/svg/1216/1216649.svg"></div>
+        </div>
+        </div>
+    }
+</ul>

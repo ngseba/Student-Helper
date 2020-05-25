@@ -1,0 +1,89 @@
+﻿@using studentApp2.Models
+@model studentApp2.Models.PostViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Post</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Post.PostTitle, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Post.PostTitle, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Post.PostTitle, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Post.PostBody, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Post.PostBody, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Post.PostBody, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.PostType, "PostType", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("PostType",
+                        new SelectList(Enum.GetValues(typeof(PostType))),
+                        "Select Post Type",
+                        new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.PostType, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group" id="PostYear">
+            @Html.LabelFor(model => model.PostYear, "Post Year", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.PostYear, Enumerable.Range(1, 4).Select(year => new SelectListItem { Text = year.ToString(), Value = year.ToString() }), new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group" id="PostGroup">
+            @Html.LabelFor(model => model.GroupID, "GroupID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("GroupID", new SelectList(ViewBag.GroupList, "value", "text"), new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.GroupID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(function() {
+            $("#PostType").on("change", function() {
+				if ($("#PostType").val() == "Year") {
+					$("#PostYear").show();
+                    $("#PostGroup").hide();
+				} else if ($("#PostType").val() == "Group") {
+					$("#PostGroup").show();
+                    $("#PostYear").hide();
+				} else {
+					$("#PostYear").hide();
+                    $("#PostGroup").hide();
+				}
+            });
+            $("#PostType").trigger("change");
+        });
+    </script>
+}
