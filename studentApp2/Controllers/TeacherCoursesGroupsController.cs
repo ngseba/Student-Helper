@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity.Owin;
+using Newtonsoft.Json;
 using studentApp2.Models;
 
 namespace studentApp2.Controllers
@@ -94,6 +95,10 @@ namespace studentApp2.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "TeacherCoursesGroupID,TeacherCoursesID,GroupID")] TeacherCoursesGroup teacherCoursesGroup)
         {
+            var caca = JsonConvert.SerializeObject(teacherCoursesGroup).ToString();
+
+
+
             if (ModelState.IsValid)
             {
                 db.TeacherCoursesGroups.Add(teacherCoursesGroup);
@@ -108,31 +113,42 @@ namespace studentApp2.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         
-        public ActionResult GetCourseList ()
+        public ActionResult GetCourseList (int groupID)
         {
-            //var courseList = db.Courses.Join(db.CourseDepartments,
-            //    course => course.CourseID,
-            //    cd => cd.CourseID,
-            //    (course, cd) => new { Course = course, CourseDepartment = cd }).Join(db.Groups,
-            //    department => department.CourseDepartment.DepartmentID,
-            //    group => group.DepartmentID,
-            //    (department, group) => new { CourseDepartment = department, Group = group }).Join(db.TeacherCourses,
-            //    courseGroup => courseGroup.CourseDepartment.Course.CourseID,
-            //    teacher => teacher.CourseID,
-            //    (courseGroup, teacher) => new { CourseGroup = courseGroup, TeacherCourses = teacher }).Join(db.Users,
-            //    teacherCoursesGroup => teacherCoursesGroup.TeacherCourses.Teacher.UserId,
-            //    user => user.Id,
-            //    (teacherCoursesGroup, user) => new { TeacherCoursesGroup = teacherCoursesGroup, User = user })
-            //    .Where(teacherCourseList => teacherCourseList.TeacherCoursesGroup.CourseGroup.Group.GroupID == groupID)
-            //    .Select(teacherCourseList => new SelectListItem {
-            //        Value = teacherCourseList.TeacherCoursesGroup.TeacherCourses.TeacherCoursesID.ToString(),
-            //        Text = teacherCourseList.TeacherCoursesGroup.CourseGroup.CourseDepartment.Course.CourseName + " - "
-            //       + teacherCourseList.User.Firstname + " " + teacherCourseList.User.Lastname
-            //    });
+            var assignedCourses = db.Courses.Join(db.TeacherCourses,
+                course => course.CourseID,
+                tc => tc.CourseID,
+                (course, tc) => new { Course = course, TeacherCourses = tc }).Join(db.TeacherCoursesGroups,
+                tc => tc.TeacherCourses.TeacherCoursesID,
+                tcg => tcg.TeacherCoursesID,
+                (tc, tcg) => new { TeacherCourses = tc, TeacherCoursesGroup = tcg })
+                .Where(assignedCoursesList => assignedCoursesList.TeacherCoursesGroup.GroupID == groupID)
+                .Select(assignedCoursesList => assignedCoursesList.TeacherCoursesGroup.TeacherCourses.CourseID);
 
-            return Json("2");
+            var courseList = db.Courses.Join(db.CourseDepartments,
+                course => course.CourseID,
+                cd => cd.CourseID,
+                (course, cd) => new { Course = course, CourseDepartment = cd }).Join(db.Groups,
+                department => department.CourseDepartment.DepartmentID,
+                group => group.DepartmentID,
+                (department, group) => new { CourseDepartment = department, Group = group }).Join(db.TeacherCourses,
+                courseGroup => courseGroup.CourseDepartment.Course.CourseID,
+                teacher => teacher.CourseID,
+                (courseGroup, teacher) => new { CourseGroup = courseGroup, TeacherCourses = teacher }).Join(db.Users,
+                teacherCoursesGroup => teacherCoursesGroup.TeacherCourses.Teacher.UserId,
+                user => user.Id,
+                (teacherCoursesGroup, user) => new { TeacherCoursesGroup = teacherCoursesGroup, User = user })
+                .Where(teacherCourseList => teacherCourseList.TeacherCoursesGroup.CourseGroup.Group.GroupID == groupID)
+                .Where(teacherCourseList => !assignedCourses.Contains(teacherCourseList.TeacherCoursesGroup.CourseGroup.CourseDepartment.Course.CourseID))
+                .Select(teacherCourseList => new SelectListItem
+                {
+                    Value = teacherCourseList.TeacherCoursesGroup.TeacherCourses.TeacherCoursesID.ToString(),
+                    Text = teacherCourseList.TeacherCoursesGroup.CourseGroup.CourseDepartment.Course.CourseName + " - "
+                   + teacherCourseList.User.Firstname + " " + teacherCourseList.User.Lastname
+                }).ToList() ;
+
+            return Json(courseList);
         }
 
         // GET: TeacherCoursesGroups/Edit/5
