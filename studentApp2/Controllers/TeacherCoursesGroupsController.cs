@@ -84,21 +84,6 @@ namespace studentApp2.Controllers
         public ActionResult Create()
         {
             ViewBag.GroupID = new SelectList(db.Groups, "GroupID", "GroupName");
-            ViewBag.TeacherCoursesID = new SelectList(db.TeacherCourses, "TeacherCoursesID", "TeacherCoursesID");
-
-            var sql = @"SELECT dbo.TeacherCourses.TeacherCoursesId as Value, 
-            dbo.Courses.CourseName + ': ' + Users.LastName + ', ' + Users.FirstName  AS Text
-            FROM dbo.AspNetUsers AS Users
-            JOIN dbo.Teachers ON Users.Id = dbo.Teachers.UserId
-            JOIN dbo.TeacherCourses ON dbo.TeacherCourses.TeacherId = dbo.Teachers.TeacherId
-            JOIN dbo.Courses ON dbo.Courses.CourseId = dbo.TeacherCourses.CourseId
-            Order by dbo.Courses.CourseName, Users.LastName, Users.FirstName";
-            var res = db.Database.SqlQuery<QueryResults>(sql).ToList();
-            SelectList teacherCourses = new SelectList(res, "Value", "Text");
-
-            ViewBag.CourseID = new SelectList(db.Courses, "CourseID", "CourseName");
-            ViewBag.TeacherCoursesID = teacherCourses;
-
             return View();
         }
 
@@ -119,6 +104,35 @@ namespace studentApp2.Controllers
             ViewBag.GroupID = new SelectList(db.Groups, "GroupID", "GroupName", teacherCoursesGroup.GroupID);
             ViewBag.TeacherCoursesID = new SelectList(db.TeacherCourses, "TeacherCoursesID", "TeacherCoursesID", teacherCoursesGroup.TeacherCoursesID);
             return View(teacherCoursesGroup);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        
+        public ActionResult GetCourseList ()
+        {
+            //var courseList = db.Courses.Join(db.CourseDepartments,
+            //    course => course.CourseID,
+            //    cd => cd.CourseID,
+            //    (course, cd) => new { Course = course, CourseDepartment = cd }).Join(db.Groups,
+            //    department => department.CourseDepartment.DepartmentID,
+            //    group => group.DepartmentID,
+            //    (department, group) => new { CourseDepartment = department, Group = group }).Join(db.TeacherCourses,
+            //    courseGroup => courseGroup.CourseDepartment.Course.CourseID,
+            //    teacher => teacher.CourseID,
+            //    (courseGroup, teacher) => new { CourseGroup = courseGroup, TeacherCourses = teacher }).Join(db.Users,
+            //    teacherCoursesGroup => teacherCoursesGroup.TeacherCourses.Teacher.UserId,
+            //    user => user.Id,
+            //    (teacherCoursesGroup, user) => new { TeacherCoursesGroup = teacherCoursesGroup, User = user })
+            //    .Where(teacherCourseList => teacherCourseList.TeacherCoursesGroup.CourseGroup.Group.GroupID == groupID)
+            //    .Select(teacherCourseList => new SelectListItem {
+            //        Value = teacherCourseList.TeacherCoursesGroup.TeacherCourses.TeacherCoursesID.ToString(),
+            //        Text = teacherCourseList.TeacherCoursesGroup.CourseGroup.CourseDepartment.Course.CourseName + " - "
+            //       + teacherCourseList.User.Firstname + " " + teacherCourseList.User.Lastname
+            //    });
+
+            return Json("2");
         }
 
         // GET: TeacherCoursesGroups/Edit/5

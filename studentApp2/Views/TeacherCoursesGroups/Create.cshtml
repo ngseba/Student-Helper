@@ -6,26 +6,26 @@
 
 <h2>Assign a course and a teacher to a specific group</h2>
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>TeacherCoursesGroup</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
+        @*<div class="form-group">
             @Html.LabelFor(model => model.TeacherCoursesID, "TeacherCoursesID", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownList("TeacherCoursesID", null, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.TeacherCoursesID, "", new { @class = "text-danger" })
             </div>
-        </div>
+        </div>*@
 
         <div class="form-group">
             @Html.LabelFor(model => model.GroupID, "GroupID", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("GroupID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownList("GroupID", null, htmlAttributes: new { @class = "form-control group" })
                 @Html.ValidationMessageFor(model => model.GroupID, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -41,3 +41,40 @@
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script language="javascript" type="text/javascript">
+
+
+        function makeRequest(path, data) {
+            $.ajax({
+                type: "POST",
+                url: path,
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                error: function (xhr, status, error) {
+                    console.log("error");
+                },
+                success: function (response) {
+                    console.log("success");
+                    console.log(response);
+                },
+                failure: function (response) {
+                    console.log("fail");
+                }
+            });
+        };
+    $(function () {
+        $(".group").on("change", function () {
+            window.href.location = "GetCourseList"
+            var data = JSON.stringify({
+                GroupID: event.currentTarget.value,
+            });
+            console.log(data);
+            makeRequest("GetCourseList", data)
+        })
+    })
+</script>
+}

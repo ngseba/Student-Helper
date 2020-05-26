@@ -1,0 +1,16 @@
+﻿@using System.Web.Mvc.Html;
+@model studentApp2.Models.CatalogTeacherViewModel
+@{
+    ViewBag.Title = "Catalog";
+}
+<h1>Catalog</h1>
+
+<div class="jumbotron">
+    <ul>
+        @foreach (var course in ViewBag.courseList)
+        {
+            <a href="Course/@course.CourseID"><li>@course.CourseName </li></a>
+        }
+    </ul>
+</div>
+

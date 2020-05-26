@@ -169,6 +169,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\CatalogsController.cs" />
     <Compile Include="Controllers\ContactsController.cs" />
     <Compile Include="Controllers\CourseDepartmentsController.cs" />
     <Compile Include="Controllers\CoursesController.cs" />
@@ -183,9 +184,17 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202005261132546_Initial.cs" />
-    <Compile Include="Migrations\202005261132546_Initial.Designer.cs">
-      <DependentUpon>202005261132546_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\202005261346330_Initial.cs" />
+    <Compile Include="Migrations\202005261346330_Initial.Designer.cs">
+      <DependentUpon>202005261346330_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005261351563_catalog.cs" />
+    <Compile Include="Migrations\202005261351563_catalog.Designer.cs">
+      <DependentUpon>202005261351563_catalog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005261439480_catalog_datetimenullable.cs" />
+    <Compile Include="Migrations\202005261439480_catalog_datetimenullable.Designer.cs">
+      <DependentUpon>202005261439480_catalog_datetimenullable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\202005261305072_Test-Column.cs" />
     <Compile Include="Migrations\202005261305072_Test-Column.Designer.cs">
@@ -197,6 +206,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Catalog.cs" />
     <Compile Include="Models\Course.cs" />
     <Compile Include="Models\CourseDepartment.cs" />
     <Compile Include="Models\Department.cs" />
@@ -311,6 +321,11 @@
     <Content Include="Views\Posts\Index.cshtml" />
     <Content Include="Views\Posts\Newsfeed.cshtml" />
     <Content Include="Views\Contacts\Index.cshtml" />
+    <Content Include="Views\Catalogs\Course.cshtml" />
+    <Content Include="Views\Catalogs\Delete.cshtml" />
+    <Content Include="Views\Catalogs\Edit.cshtml" />
+    <Content Include="Views\Catalogs\Student.cshtml" />
+    <Content Include="Views\Catalogs\Teacher.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -329,8 +344,14 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202005261132546_Initial.resx">
-      <DependentUpon>202005261132546_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202005261346330_Initial.resx">
+      <DependentUpon>202005261346330_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005261351563_catalog.resx">
+      <DependentUpon>202005261351563_catalog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005261439480_catalog_datetimenullable.resx">
+      <DependentUpon>202005261439480_catalog_datetimenullable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202005261305072_Test-Column.resx">
       <DependentUpon>202005261305072_Test-Column.cs</DependentUpon>
