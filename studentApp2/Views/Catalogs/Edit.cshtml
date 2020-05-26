@@ -1,0 +1,101 @@
+﻿@using System.Web.Mvc.Html;
+@model studentApp2.Models.CatalogTeacherViewModel
+@{
+    ViewBag.Title = "Catalog";
+}
+
+<h1>Catalog</h1>
+
+<div class="jumbotron">
+	<table class="table">
+
+
+
+
+		@*<tr>
+			@Html.DropDownList("CourseId", new SelectList(ViewBag.courseList, "CourseID", "CourseName"), "Select Course", new { @class = "form-control", id = "CourseOption" })
+		</tr>*@
+
+
+		<tr>
+			<th>Group</th>
+			<th>Student</th>
+			<th>Grade</th>
+		</tr>
+
+		@foreach (var stud in Model.Students)
+		{
+			<tr>
+				<td>
+					@stud.GroupName
+				</td>
+				<td>
+					@stud.Fname @stud.Lname
+				</td>
+				<td>
+					@Html.DropDownListFor(grade => Model.Grade, Enumerable.Range(1, 10).
+				   Select(year => new SelectListItem { Text = year.ToString(), Value = year.ToString() }),
+				   new { @class = "form-control grade", studID = stud.StudentId, gradeID = stud.GradeID })
+				</td>
+			</tr>
+		}
+		<tr>
+			<td><input class="btn btn-primary" onclick="location.href='@Url.Action("Course/"+@Model.CourseID, "Catalogs")'" value="Back to catalog" /></td>
+		</tr>
+	</table>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+		var stateChanged = false;
+		$(function () {
+			$(".grade").on("change", function () {
+				stateChanged = true;
+			})
+		});
+
+		function makeRequest (path,data) {
+			$.ajax({
+						type: "POST",
+						url: path,
+						data: data,
+						contentType: "application/json; charset=utf-8",
+						dataType: "json",
+						error: function (xhr, status, error) {
+							console.log("error");
+						},
+						success: function (response) {
+							console.log("success");
+						},
+						failure: function (response) {
+							console.log("fail");
+						}
+					});
+		};
+
+		$(function () {
+			$(".grade").on("blur", function () {
+				if (stateChanged)
+					if (event.currentTarget.getAttribute("gradeID") != 0) {
+						var data = JSON.stringify({
+							GradeID: event.currentTarget.getAttribute("gradeID"),
+							StudentID: event.currentTarget.getAttribute("studID"),
+							CourseID: @Model.CourseID,
+							Grade: event.currentTarget.value
+						});
+						makeRequest(".", data)
+					}
+					else {
+						var data = JSON.stringify({
+							StudentID: event.currentTarget.getAttribute("studID"),
+							CourseID: @Model.CourseID,
+							Grade: event.currentTarget.value
+						});
+						makeRequest("../Create", data)
+					}
+			});
+		});
+
+    </script>
+}

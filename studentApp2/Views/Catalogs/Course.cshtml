@@ -1,0 +1,106 @@
+﻿@using System.Web.Mvc.Html;
+@model studentApp2.Models.CatalogTeacherViewModel
+@{
+	ViewBag.Title = "Catalog ";
+}
+
+	<h1>Catalog @Model.CourseName</h1>
+
+<div class="jumbotron">
+	<table class="table">
+
+
+
+
+		@*<tr>
+			@Html.DropDownList("CourseId", new SelectList(ViewBag.courseList, "CourseID", "CourseName"), "Select Course", new { @class = "form-control", id = "CourseOption" })
+		</tr>*@
+
+
+		<tr>
+			<th>Group</th>
+			<th>Student</th>
+			<th>Date</th>
+			<th>Grade</th>
+		</tr>
+
+		@foreach (var stud in Model.Students)
+		{
+	<tr>
+
+		<td>
+			@stud.GroupName
+		</td>
+		<td>
+			@stud.Fname @stud.Lname
+		</td>
+		@if (stud.Grade == null)
+		{
+			<td>Not assigned</td>
+			<td>Not assigned</td>
+
+		}
+		else if (stud.Grade == -1)
+		{
+			<td>@stud.GradeDate</td>
+			<td>Absent</td>
+		}
+		else
+		{
+			<td>@stud.GradeDate</td>
+			<td>@stud.Grade</td>
+		}
+	</tr>}
+
+
+	@*@Html.TextBox(nota, null, new { @class = "form-control grade", studId = @stud.StudentId })*@
+
+	<tr>
+		<td><input class="btn btn-primary" onclick="location.href='@Url.Action("Edit/"+@Model.CourseID, "Catalogs")'" value="Edit" /></td>
+	</tr>
+	</table>
+</div>
+
+@section Scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+	<script>
+		var stateChanged = false;
+		$(function () {
+			$(".grade").on("change", function () {
+				stateChanged = true;
+			})
+		});
+
+		$(function () {
+			var token = $('input[name="`__RequestVerificationToken`"]').val();
+			$(".grade").on("blur", function () {
+				if (stateChanged)
+					$.ajax({
+						type: "POST",
+						url: "../Create",
+						data: JSON.stringify({
+							StudentID: event.currentTarget.getAttribute("studID"),
+							CourseID: @Model.CourseID,
+							Grade: event.currentTarget.value
+						}),
+						contentType: "application/json; charset=utf-8",
+						dataType: "json",
+						error: function (xhr, status, error) {
+							alert(xhr.status);
+							alert(xhr.responseText);
+						},
+						success: function (response) {
+							alert(response.d);
+						},
+						failure: function (response) {
+							alert(response.d);
+						}
+					});
+			});
+			// Simulate an HTTP redirect:
+			//window.location.replace("../Create");
+			console.log("get request");
+		});
+		
+	</script>
+}
