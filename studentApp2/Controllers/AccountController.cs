@@ -171,8 +171,17 @@ namespace studentApp2.Controllers
                     await UserManager.AddToRoleAsync(user.Id, model.Role);
                     if (model.Role == "Student")
                     {
-                        var student = new Student { UserId = user.Id ,GroupID = model.studGroup};
+                        var student = new Student { UserId = user.Id, GroupID = model.studGroup };
+                        var courses = db.TeacherCoursesGroups.Where(tcg => tcg.GroupID == model.studGroup).Select(tcg=>tcg.TeacherCourses.Course).ToList();
+                       
                         db.Students.Add(student);
+                        db.SaveChanges();
+                        var addedStudent = db.Students.FirstOrDefault(dbStudent => dbStudent.UserId == user.Id);
+                        foreach (var course in courses)
+                        {
+                            var grade = new Catalog{ StudentID = addedStudent.StudentId,CourseID = course.CourseID, Grade = 0,GradeDate = null };
+                            db.Catalogs.Add(grade);
+                        }
                         db.SaveChanges();
                     }
                     else if(model.Role == "Teacher")

@@ -33,9 +33,18 @@
 					@stud.Fname @stud.Lname
 				</td>
 				<td>
-					@Html.DropDownListFor(grade => Model.Grade, Enumerable.Range(1, 10).
-				   Select(year => new SelectListItem { Text = year.ToString(), Value = year.ToString() }),
-				   new { @class = "form-control grade", studID = stud.StudentId, gradeID = stud.GradeID })
+					@Html.DropDownList("grades", Enumerable.Range(1, 10)
+						 .Select(grade => new SelectListItem { Text = grade.ToString(), Value = grade.ToString() })
+						 .Concat(new List<SelectListItem> {
+							new SelectListItem { Text = "Not assigned", Value = "0" },
+							new SelectListItem { Text = "Absent", Value = "-1"},
+							new SelectListItem { Text = "Not elligible", Value = "-2"}
+						 }), 
+						 stud.Grade.ToString() == "-2" ? "Not elligible" : 
+						 stud.Grade.ToString() == "-1" ? "Absent" : 
+						 stud.Grade.ToString() == "0" ? "Not assigned" : 
+						 stud.Grade.ToString(),
+						 new { @class = "form-control grade", studID = stud.StudentId, gradeID = stud.GradeID })
 				</td>
 			</tr>
 		}
@@ -75,25 +84,17 @@
 		};
 
 		$(function () {
-			$(".grade").on("blur", function () {
-				if (stateChanged)
-					if (event.currentTarget.getAttribute("gradeID") != 0) {
+			$(".grade").on("change", function () {
+				$(".grade").on("blur", function () {
+					if (stateChanged)
 						var data = JSON.stringify({
 							GradeID: event.currentTarget.getAttribute("gradeID"),
 							StudentID: event.currentTarget.getAttribute("studID"),
 							CourseID: @Model.CourseID,
 							Grade: event.currentTarget.value
 						});
-						makeRequest(".", data)
-					}
-					else {
-						var data = JSON.stringify({
-							StudentID: event.currentTarget.getAttribute("studID"),
-							CourseID: @Model.CourseID,
-							Grade: event.currentTarget.value
-						});
-						makeRequest("../Create", data)
-					}
+					makeRequest(".", data)
+				});
 			});
 		});
 

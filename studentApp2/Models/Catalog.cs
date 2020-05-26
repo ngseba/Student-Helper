@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace studentApp2.Models
 {
@@ -11,7 +13,7 @@ namespace studentApp2.Models
         public int StudentID { get; set; }
         public int CourseID { get; set; }
         public int Grade { get; set; }
-        public DateTime GradeDate { get; set; }
+        public DateTime? GradeDate { get; set; }
     }
 
     public class CatalogTeacherViewModel
@@ -22,6 +24,9 @@ namespace studentApp2.Models
         public int Grade { get; set; }
         public int CourseID { get; set; }
         public string CourseName { get; set; }
+
+        public IEnumerable<SelectListItem> gradeList = new SelectList(Enumerable.Range(1, 10).
+                   Select(grade => new SelectListItem { Text = grade.ToString(), Value = grade.ToString() }));
     }
 
     public class CatalogStudentViewModel
@@ -33,6 +38,6 @@ namespace studentApp2.Models
     {
         public string CourseName { get; set; }
         public int Grade { get; set; }
-        public DateTime GradeDate { get; set; }
+        public DateTime? GradeDate { get; set; }
     }
 }

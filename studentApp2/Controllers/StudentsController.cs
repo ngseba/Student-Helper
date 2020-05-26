@@ -123,9 +123,19 @@ namespace studentApp2.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(student).State = EntityState.Modified;
+                db.Catalogs.RemoveRange(db.Catalogs.Where(Catalog => Catalog.StudentID == student.StudentId));
                 db.SaveChanges();
+                var courses = db.TeacherCoursesGroups.Where(tcg => tcg.GroupID == student.GroupID).Select(tcg => tcg.TeacherCourses.Course).ToList();
+                foreach (var course in courses)
+                {
+                    var grade = new Catalog { StudentID = student.StudentId, CourseID = course.CourseID, Grade = 0, GradeDate = null };
+                    db.Catalogs.Add(grade);
+                }
+                db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
+
             ViewBag.GroupID = new SelectList(db.Groups, "GroupID", "GroupName", student.GroupID);
             return View(student);
         }

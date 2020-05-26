@@ -14,18 +14,32 @@
         </tr>
         @foreach (var grade in Model.grades)
         {
-            <tr>
+        <tr>
+        <td>
+            @grade.CourseName
+        </td>
+        @if (grade.Grade == 0)
+        {
+            <td>Not assigned</td>
+            <td>Not assigned</td>
 
-                <td>
-                    @grade.CourseName
-                </td>
-                <td>
-                   @grade.GradeDate.ToString().Split(' ')[0]
-                </td>
-               <td>
-                   @grade.Grade
-               </td>
-            </tr>
+        }
+        else if (grade.Grade == -1)
+        {
+            <td>@grade.GradeDate.ToString().Split(' ')[0]</td>
+            <td>Absent</td>
+        }
+        else if (grade.Grade == -2)
+        {
+            <td>@grade.GradeDate.ToString().Split(' ')[0]</td>
+            <td>Not elligible</td>
+        }
+        else
+        {
+            <td>@grade.GradeDate.ToString().Split(' ')[0]</td>
+            <td>@grade.Grade</td>
+        }
+        </tr>
 }
     </table>
 </div>

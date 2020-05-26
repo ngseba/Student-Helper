@@ -16,6 +16,10 @@ namespace studentApp2.Models
         public Teacher Teacher { get; set; }
 
         public List<TeacherCoursesGroup> TeacherCoursesGroups { get; set; }
+        public override string ToString()
+        {
+            return  this.TeacherCoursesID.ToString() + " "; 
+        }
     }
 
     public class TeacherNameViewModel

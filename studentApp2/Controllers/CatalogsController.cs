@@ -69,21 +69,8 @@ namespace studentApp2.Controllers
         {
             var userId = User.Identity.GetUserId();
             var currentStudent = db.Students.FirstOrDefault(dbStudent => dbStudent.UserId == userId);
-            var dbGrades = from course in db.Courses
-                           join cd in db.CourseDepartments
-                           on course.CourseID equals cd.CourseID
-                           join d in db.Departments
-                           on cd.DepartmentID equals d.DepartmentID
-                           join g in db.Groups
-                           on d.DepartmentID equals g.DepartmentID
-                           join s in db.Students
-                           on g.GroupID equals s.GroupID
-                           join grade in db.Catalogs
-                           on s.StudentId equals grade.StudentID
-                           where (course.CourseID == grade.CourseID) && s.StudentId == currentStudent.StudentId
-                           select new { course, grade };
-
-
+            var dbGrades = db.Catalogs.Join(db.Courses, grade => grade.CourseID, course => course.CourseID, (grade, course)
+                  => new { Grade = grade, course.CourseName }).Where(grade => grade.Grade.StudentID == currentStudent.StudentId);
 
             var student = new CatalogStudentViewModel();
             var grades = new List<GradeStudentViewModel>();
@@ -92,9 +79,9 @@ namespace studentApp2.Controllers
                 try
                 {
                     var grade = new GradeStudentViewModel();
-                    grade.CourseName = dbGrade.course.CourseName;
-                    grade.Grade = dbGrade.grade.Grade;
-                    grade.GradeDate = dbGrade.grade.GradeDate;
+                    grade.CourseName = dbGrade.CourseName;
+                    grade.Grade = dbGrade.Grade.Grade;
+                    grade.GradeDate = dbGrade.Grade.GradeDate;
                     grades.Add(grade);
                 }
                 catch (Exception e) { }
@@ -224,7 +211,7 @@ namespace studentApp2.Controllers
             {
                 try
                 {
-                    var updateRecord = db.Catalogs.FirstOrDefault(grade => grade.GradeID == catalog.GradeID);
+                    var updateRecord = db.Catalogs.Where(grade => grade.StudentID == catalog.StudentID).FirstOrDefault(grade => grade.CourseID == catalog.CourseID);
                     updateRecord.Grade = catalog.Grade;
                     updateRecord.GradeDate = DateTime.Today;
                     db.SaveChanges();
