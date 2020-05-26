@@ -187,6 +187,10 @@
     <Compile Include="Migrations\202005261132546_Initial.Designer.cs">
       <DependentUpon>202005261132546_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005261305072_Test-Column.cs" />
+    <Compile Include="Migrations\202005261305072_Test-Column.Designer.cs">
+      <DependentUpon>202005261305072_Test-Column.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Course.cs" />
@@ -323,6 +327,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202005261132546_Initial.resx">
       <DependentUpon>202005261132546_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005261305072_Test-Column.resx">
+      <DependentUpon>202005261305072_Test-Column.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
