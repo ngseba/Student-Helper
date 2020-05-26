@@ -191,6 +191,10 @@
     <Compile Include="Migrations\202005261305072_Test-Column.Designer.cs">
       <DependentUpon>202005261305072_Test-Column.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005261312277_remove-col.cs" />
+    <Compile Include="Migrations\202005261312277_remove-col.Designer.cs">
+      <DependentUpon>202005261312277_remove-col.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Course.cs" />
@@ -330,6 +334,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202005261305072_Test-Column.resx">
       <DependentUpon>202005261305072_Test-Column.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005261312277_remove-col.resx">
+      <DependentUpon>202005261312277_remove-col.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
