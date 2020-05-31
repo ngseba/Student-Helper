@@ -13,7 +13,7 @@ namespace studentApp2.Models
         public int TeacherCoursesID { get; set; }
         public TeacherCourses TeacherCourses { get; set; }
         public int GroupID { get; set; }
-        public Group Group { get; set; }
+        public virtual Group Group { get; set; }
     }
 
     public class TCGViewModel

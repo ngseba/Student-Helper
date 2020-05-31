@@ -60,6 +60,11 @@ namespace studentApp2.Models
         public System.Data.Entity.DbSet<studentApp2.Models.GeneralPost> GeneralPosts { get; set; }
 
         public System.Data.Entity.DbSet<studentApp2.Models.Catalog> Catalogs { get; set; }
+        public System.Data.Entity.DbSet<studentApp2.Models.Event> Events { get; set; }
+        public System.Data.Entity.DbSet<studentApp2.Models.GroupEvent> GroupEvents { get; set; }
+
+
+
 
     }
 }

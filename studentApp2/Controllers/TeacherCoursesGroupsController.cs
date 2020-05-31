@@ -95,10 +95,6 @@ namespace studentApp2.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "TeacherCoursesGroupID,TeacherCoursesID,GroupID")] TeacherCoursesGroup teacherCoursesGroup)
         {
-            var caca = JsonConvert.SerializeObject(teacherCoursesGroup).ToString();
-
-
-
             if (ModelState.IsValid)
             {
                 db.TeacherCoursesGroups.Add(teacherCoursesGroup);

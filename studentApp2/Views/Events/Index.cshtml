@@ -1,0 +1,429 @@
+﻿@using studentApp2.Models
+@model studentApp2.Models.Event
+@section head
+{
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.6/css/all.css">
+    <link rel="stylesheet" href="~/libs/fullcalendar/calendar.core.main.css">
+    <link rel="stylesheet" href="~/libs/fullcalendar/calendar.daygrid.main.css">
+    <link rel="stylesheet" href="~/libs/fullcalendar/simple-sidebar.css">
+    <link rel="stylesheet" href="~/libs/fullcalendar/mdtimepicker.css">
+    <link rel="stylesheet" href="~/libs/fullcalendar/duDatepicker.css">
+
+
+    <script src='~/libs/fullcalendar/calendar.core.main.js'></script>
+    <script src='~/libs/fullcalendar/calendar.daygrid.main.js'></script>
+    <script src='~/libs/fullcalendar/calendar.bootstrap.main.js'></script>
+    <script src='~/libs/fullcalendar/calendar.interaction.main.js'></script>
+    <script src='~/libs/fullcalendar/mdtimepicker.js'></script>
+    <script src='~/libs/fullcalendar/duDatepicker.js'></script>
+
+}
+
+
+<br />
+<div id="alert_course" class="alert alert-danger d-none" role="alert">
+    <strong>Select</strong> a course and a group
+    <button id="button_alert" type="button" class="close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="d-flex" id="wrapper">
+    <div id="page-content-wrapper" class="col-12">
+        @if (ViewBag.TeacherCourses != null)
+        {
+            <br />
+            <div class="form-inline">
+                <div class="form-group col-md-4">
+                    @Html.Label("Course: ", htmlAttributes: new { @class = "control-label col-md-3", @for = "CourseSelect", id = "label_course" })
+                    @Html.DropDownList("CourseSelect", (SelectList)ViewBag.TeacherCourses, "Select Course", new { @class = "form-control input-lg", id = "select_course" })
+                </div>
+                <div class="form-group col-md-4">
+                    @Html.Label("Group: ", htmlAttributes: new { @class = "control-label col-md-3 d-none", @for = "GroupSelect", id = "label_group" })
+                    <select name="GroupSelect" id="select_group" class="form-control input-lg d-none"></select>
+
+                </div>
+            </div>
+        }
+        <button type="button" class="btn btn-lg btn-danger pop" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">Click to toggle popover</button>
+        <div id='calendar'></div>
+    </div>
+
+
+    <div id="sidebar-wrapper" class="bg-light border-right col-7" tabindex="0">
+        <div class="list-group list-group-flush">
+            <h2 id="sidebar-eventtitle">Start Bootstrap </h2>
+            <a href="#" class="list-group-item list-group-item-action bg-light" id="sidebar-teacher"></a>
+            <a href="#" class="list-group-item list-group-item-action bg-light" id="sidebar-course"></a>
+            <a href="#" class="list-group-item list-group-item-action bg-light" id="sidebar-type"></a>
+            <a href="#" class="list-group-item list-group-item-action bg-light" id="sidebar-date"></a>
+            <a href="#" class="list-group-item list-group-item-action bg-light" id="sidebar-time"></a>
+            <a href="#" class="list-group-item list-group-item-action bg-light" id="sidebar-description"></a>
+        </div>
+    </div>
+</div>
+
+<div id="modal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            @using (@Html.BeginForm("Index", "Events", FormMethod.Post, new { id = "modal_event_form" }))
+            {
+                @Html.AntiForgeryToken()
+                <fieldset id="modal_fieldset">
+                    <div class="form-horizontal">
+                        <h4 class="modal-header">Event</h4>
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <input type="hidden" id="modal_event_id" />
+                        <div class="form-group">
+                            @Html.Label("Event Title", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.EventTitle, new { htmlAttributes = new { @class = "form-control", id = "modal_event_title" } })
+                                @Html.ValidationMessageFor(model => model.EventTitle, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Event Type", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.DropDownList("EventType",
+                                                        new SelectList(Enum.GetValues(typeof(EventType))),
+                                                        new { @class = "form-control", id = "modal_event_type" })
+                                @Html.ValidationMessageFor(model => model.EventType, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("Event Date", htmlAttributes: new { @class = "control-label col-md-2  d-none", id = "modal_label_datepicker" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.EventDate, new { htmlAttributes = new { id = "datepicker", @class = "form-control d-none", } })
+                                @Html.ValidationMessageFor(model => model.EventDate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("Event Time", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.EventDate, new { htmlAttributes = new { id = "timepicker", @class = "form-control", } })
+                                @Html.ValidationMessageFor(model => model.EventDate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Event Description", htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-10">
+                                <textarea id="modal_event_description" name="EventDescription" class="form-control" rows="3"></textarea>
+                                @Html.ValidationMessageFor(model => model.EventDescription, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="modal-footer">
+                    <button id="modal_button_delete" type="button" class="btn btn-danger d-none">Delete</button>
+                    <button id="modal_button_create" type="button" class="btn btn-primary d-none">Create</button>
+                    <button id="modal_button_save" type="button" class="btn btn-primary d-none">Save changes</button>
+                    <button id="modal_button_edit" type="button" class="btn btn-primary d-none">Edit</button>
+                    <button id="modal_button_close" type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    
+    <script>
+        var teacher = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.TeacherCourses));
+        document.addEventListener("DOMContentLoaded", ready);
+        function ready() {
+            $('#select_course').prop('selectedIndex', 0);
+        }
+        var calendar =  createCalendar(null);
+        if (teacher != undefined) {
+
+            function getTeacherUsername() {
+                return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(HttpContext.Current.User.Identity.Name));
+            }
+
+            $('#select_course').on('change', function () {
+                getRequest("getGroupList/" + this.value, 'group')
+            });
+
+            $('#select_group').on('change', function () {
+                getRequest("getEventList/" + this.value, 'event')
+            });
+
+            $('#button_alert').on('click', function () {
+                $('#alert_course').addClass('d-none');
+            });
+
+            $(document).ready(function () {
+                $('#timepicker').mdtimepicker();
+            });
+
+            $(document).ready(function () {
+                $('#datepicker').duDatepicker({
+                    format: 'dd/mm/yyyy',
+                    outFormat: 'dd/mm/yyyy',
+                    auto : true
+                    }); //Initializes the date picker
+            });
+
+            function getRequest(path, mode) {
+                $.ajax({
+                    type: "GET",
+                    url: path,
+                    dataType: "json",
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    },
+                    success: function (response) {
+                        if (mode == 'group') {
+                            groups = response;
+                            var options = '<option>Select group</option>';
+                            for (var i = 0, len = groups.length; i < len; i++) {
+                                options += '<option value= "' + groups[i].GroupID + '">' + groups[i].GroupName + '</option>';
+                            }
+                            $('#select_group').html(options);
+                            if (groups.length > 0) {
+                                $('#label_group').removeClass('d-none')
+                                $('#select_group').removeClass('d-none')
+                            } else {
+                                $('#label_group').addClass('d-none')
+                                $('#select_group').addClass('d-none')
+                            }
+                        }
+                        else if (mode == 'event') {
+                            events = response;
+                            formatEvents(events);
+                            calendar = createCalendar(events);
+                        }
+                    }
+                });
+            }
+
+
+            function createEvent(path, data) {
+                $.ajax({
+                    type: "POST",
+                    url: path,
+                    data: data,
+                    dataType: "json",
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        event = formatEvents(response);
+                        calendar.addEvent(event[0]);
+                        $('#modal_button_close').click();
+                    }
+                });
+            }
+
+            function editEvent(path, data) {
+                $.ajax({
+                    type: "POST",
+                    url: path,
+                    data: data,
+                    dataType: "json",
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    },
+                    success: function (response) {
+                        let event = calendar.getEventById(response.id);
+                        let dbEvent = response;
+                        event.setExtendedProp('eventTitle', dbEvent.title);
+                        event.setExtendedProp('type', dbEvent.type);
+                        event.setDates(dbEvent.start, null, false);
+                        event.setExtendedProp('description', dbEvent.description);
+                        dbEvent = formatEvents(response);
+                        event.setProp('color', dbEvent[0].color);
+                        event.setProp('title', dbEvent[0].title);
+                        $('#modal_button_close').click();
+                    }
+                });
+            }
+
+            function deleteEvent(path) {
+                $.ajax({
+                    type: "POST",
+                    url: path,
+                    dataType: "json",
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    },
+                    success: function (response) {
+                        let event = calendar.getEventById(response.id);
+                        event.remove();
+                        $('#modal_button_close').click();
+                    }
+                });
+            }
+
+            $('#modal_button_create').on('click', function () {
+                event = {
+                    EventTitle: $('#modal_event_title').val(),
+                    EventType: $('#modal_event_type').val(),
+                    EventDate: $('#timepicker').attr("date") + " " + $('#timepicker').val(),
+                    EventDescription: $('#modal_event_description').val(),
+                    EventGroup: $('#select_group').val(),
+                    EventCourse: $('#select_course').val()
+                }
+                createEvent('Create', event);
+            });
+
+            $('#modal_button_save').on('click', function () {
+                let date = $('#datepicker').val().split('/')[1] + '/' +
+                    $('#datepicker').val().split('/')[0] + '/' +
+                    $('#datepicker').val().split('/')[2];
+                event = {
+                    EventID: $('#modal_event_id').val(),
+                    EventTitle: $('#modal_event_title').val(),
+                    EventType: $('#modal_event_type').val(),
+                    EventDate: date + " " + $('#timepicker').val(),
+                    EventDescription: $('#modal_event_description').val()
+                }
+                editEvent('Edit', event);
+            });
+
+            $('#modal_button_delete').on('click', function () {
+                let id = $('#modal_event_id').val();
+                deleteEvent('Delete/'+id);
+            });
+
+            $('#modal_button_edit').on('click', function () {
+                $('#modal_fieldset').attr('disabled', false);
+                $('#modal_button_edit').addClass('d-none');
+                $('#modal_button_delete').removeClass('d-none');
+                $('#modal_button_save').removeClass('d-none');
+                $('#datepicker').removeClass('d-none');
+                $('#datepicker').attr('readonly', false);
+                $('#modal_label_datepicker').removeClass('d-none');
+            });
+         }
+         else {
+            let events = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.groupEvents));
+            events = formatEvents(events);
+            calendar = createCalendar(events);
+        }
+
+        function formatEvents(event) {
+            let events = !Array.isArray(event) ? [event] : event;
+            for (i = 0; i < events.length; i++) {
+                let initial = '';
+                events[i].eventTitle = events[i].title;
+                events[i].courseName.split(' ')
+                    .forEach(word => {
+                    initial += word[0];
+                })
+                events[i].title = initial + ' ' + events[i].type;
+                events[i].color = events[i].type == 'Exam' ? 'green' :
+                    (events[i].type == 'Project' ? 'blue' :
+                        (events[i].type == 'Assignment' ? 'red' : ' '));
+                console.log('caca FOR')
+                console.log(events[i]);
+            }
+            console.log('caca FUNCTION ALMOST OUT');
+            console.log(events);
+            return events;
+        }
+
+        function createCalendar(events) {
+                $('#calendar').empty();
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    plugins: ['interaction', 'dayGrid', 'bootstrap'],
+                    themeSystem: 'bootstrap',
+                    defaultView: 'dayGridMonth',
+                    selectable: true,
+                    eventClick: function (info) {
+                        let month = ((info.event.start.getMonth() + 1) < 10) ? "0" : "";
+                        month += info.event.start.getMonth() + 1;
+                        let day = ((info.event.start.getDate()) < 10) ? "0" : "";
+                        day += info.event.start.getDate();
+                        let event = {
+                            id: info.event.id,
+                            title: info.event.extendedProps.eventTitle,
+                            type: info.event.extendedProps.type,
+                            teacher: info.event.extendedProps.teacherName,
+                            course: info.event.extendedProps.courseName,
+                            date: day + "/" +
+                                   month + "/" +
+                                    info.event.start.getFullYear(),
+                            time: info.event.start.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }),
+                            description: info.event.extendedProps.description,
+                            teacherUsername: info.event.extendedProps.teacherUsername,
+                        }
+                        if (teacher != undefined) {
+                            $('#modal_event_id').val(event.id);
+                            $('#modal_event_title').val(event.title);
+                            $('#modal_event_type').val(event.type);
+                            $('#timepicker').val(event.time);
+                            $('#datepicker').val(event.date);
+                            $('#modal_event_description').val(event.description);
+                            $('#modal_fieldset').attr('disabled',true);
+                            $('#modal_button_create').addClass('d-none');
+                            $('#modal_button_save').addClass('d-none');
+                            $('#datepicker').addClass('d-none');
+                            $('#modal_label_datepicker').addClass('d-none');
+                            console.log(event.teacherUsername);
+                            console.log(getTeacherUsername());
+                            if (event.teacherUsername == getTeacherUsername()) {
+
+                                $('#modal_button_edit').removeClass('d-none');
+                                $('#modal_button_delete').removeClass('d-none');
+                            } else {
+                                $('#modal_button_edit').addClass('d-none');
+                                $('#modal_button_delete').addClass('d-none');
+                            }
+                            $('#modal').modal();
+                        } else {
+                            $("#sidebar-wrapper,#page-content-wrapper").toggleClass("toggled");
+                            $("#sidebar-title").text(event.title)
+                            $("#sidebar-teacher").text("Initiated by: " + event.teacher)
+                            $("#sidebar-course").text("Course: " + event.course)
+                            $("#sidebar-type").text("Event Type: " + event.type)
+                            $("#sidebar-date").text("Date: " + event.date)
+                            $("#sidebar-time").text("Time: " + event.time)
+                            $("#sidebar-description").text("Room: " + event.description)
+                        }
+
+
+
+
+                    },
+                    dateClick: function (info) {
+                            if (teacher != undefined && $('#select_course').val() != '' && $('#select_group').val() != 'Select group') {
+                                $('#alert_course').addClass('d-none');
+                                document.getElementById("modal_event_form").reset()
+                                $('#modal_button_edit').addClass('d-none');
+                                $('#modal_button_save').addClass('d-none');
+                                $('#modal_button_delete').addClass('d-none');
+                                $('#datepicker').addClass('d-none');
+                                $('#modal_label_datepicker').addClass('d-none');
+                                $('#modal_button_create').removeClass('d-none');
+                                $('#modal_fieldset').attr('disabled', false);
+                                $('#modal').modal();
+                                var date = info.dateStr.split("-");
+                                $('#timepicker').attr("date", date[1] + "/" + date[2] + "/" + date[0]);
+                            }
+                            else
+                                $('#alert_course').removeClass('d-none')
+                        },
+                    events:events,
+                    displayEventTime: false
+                });
+                calendar.render();
+                return calendar;
+        }
+
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+
+    </script>
+}
+

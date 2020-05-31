@@ -2,86 +2,92 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - UniHelp</title>
     <link href="@Url.Content("~/Content/newsfeed.css")" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    @RenderSection("Style", false)
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    @RenderSection("head", false)
 </head>
-<body style="padding-top: 0;">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-radius: 0;">
-        <a class="navbar-brand" href="../Home/Index">Home</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse">
-            <ul class="navbar-nav">
-                @if (User.IsInRole("Admin"))
-                {
+    <body style="padding-top: 0;">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="border-radius: 0;">
+            <a class="navbar-brand" href="../Home/Index">Home</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse">
+                <ul class="navbar-nav">
+                    @if (User.IsInRole("Admin"))
+                    {
 
-                    <li class="nav-item dropdown" style="margin-right: 30px;">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            User administration
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <span>@Html.ActionLink("All users", "/", "Admin", null, new { @class = "dropdown-item" })</span>
-                            <span>@Html.ActionLink("Students", "/", "Students", null, new { @class = "dropdown-item" })</span>
-                            <span>@Html.ActionLink("Teachers", "/", "Teachers", null, new { @class = "dropdown-item" })</span>
-                            <span>@Html.ActionLink("Add new user", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", @class = "dropdown-item" })</span>
-                        </div>
-                    </li>
+                        <li class="nav-item dropdown" style="margin-right: 30px;">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                User administration
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <span>@Html.ActionLink("All users", "/", "Admin", null, new { @class = "dropdown-item" })</span>
+                                <span>@Html.ActionLink("Students", "/", "Students", null, new { @class = "dropdown-item" })</span>
+                                <span>@Html.ActionLink("Teachers", "/", "Teachers", null, new { @class = "dropdown-item" })</span>
+                                <span>@Html.ActionLink("Add new user", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink", @class = "dropdown-item" })</span>
+                            </div>
+                        </li>
 
-                    <li class="nav-item dropdown" style="margin-right: 30px;">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Departments and groups
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <span>@Html.ActionLink("Departments", "/", "Departments", null, new { @class = "dropdown-item" })</span>
-                            <span>@Html.ActionLink("Groups", "/", "Groups", null, new { @class = "dropdown-item" })</span>
-                        </div>
-                    </li>
+                        <li class="nav-item dropdown" style="margin-right: 30px;">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Departments and groups
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <span>@Html.ActionLink("Departments", "/", "Departments", null, new { @class = "dropdown-item" })</span>
+                                <span>@Html.ActionLink("Groups", "/", "Groups", null, new { @class = "dropdown-item" })</span>
+                            </div>
+                        </li>
 
-                    <li class="nav-item dropdown" style="margin-right: 30px;">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Academic administration
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <span>@Html.ActionLink("Courses", "/", "Courses", null, new { @class = "dropdown-item" })</span>
-                            <span>@Html.ActionLink("Assign courses to departments", "/", "CourseDepartments", null, new { @class = "dropdown-item" })</span>
-                            <span>@Html.ActionLink("Assign teachers to courses", "/", "TeacherCourses", null, new { @class = "dropdown-item" })</span>
-                            <span>@Html.ActionLink("Assign courses to groups", "/", "TeacherCoursesGroups", null, new { @class = "dropdown-item" })</span>
-                        </div>
-                    </li>
-                    <li>@Html.ActionLink("Posts", "/", "Posts", null, new { @class = "nav-link" })</li>
-                }
-                @if (User.IsInRole("Teacher"))
-                {
-                    <li style="margin-right: 30px;">@Html.ActionLink("Anouncements", "/", "Posts", null, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
-                }
-                @if (User.IsInRole("Student"))
-                {
-                    <li style="margin-right: 30px;">@Html.ActionLink("Anouncements", "/", "Posts", null, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
-                }
-            </ul>
-            @Html.Partial("_LoginPartial")
+                        <li class="nav-item dropdown" style="margin-right: 30px;">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Academic administration
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <span>@Html.ActionLink("Courses", "/", "Courses", null, new { @class = "dropdown-item" })</span>
+                                <span>@Html.ActionLink("Assign courses to departments", "/", "CourseDepartments", null, new { @class = "dropdown-item" })</span>
+                                <span>@Html.ActionLink("Assign teachers to courses", "/", "TeacherCourses", null, new { @class = "dropdown-item" })</span>
+                                <span>@Html.ActionLink("Assign courses to groups", "/", "TeacherCoursesGroups", null, new { @class = "dropdown-item" })</span>
+                            </div>
+                        </li>
+                        <li>@Html.ActionLink("Posts", "/", "Posts", null, new { @class = "nav-link" })</li>
+                    }
+                    @if (User.IsInRole("Teacher"))
+                    {
+                        <li style="margin-right: 30px;">@Html.ActionLink("Anouncements", "/", "Posts", null, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Catalog", "/", "Catalogs", null, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Events", "/", "Events", null, new { @class = "nav-link" })</li>
+
+
+                    }
+                    @if (User.IsInRole("Student"))
+                    {
+                        <li style="margin-right: 30px;">@Html.ActionLink("Anouncements", "/", "Posts", null, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Catalog", "/", "Catalogs", null, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Calendar", "/", "Events", null, new { @class = "nav-link" })</li>
+
+
+                    }
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </nav>
+
+        <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year - UniHelp</p>
+            </footer>
         </div>
-    </nav>
 
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - UniHelp</p>
-        </footer>
-    </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
-</body>
+        @RenderSection("scripts", required: false)
+    </body>
 </html>

@@ -13,7 +13,5 @@ namespace studentApp2.Models
 
         public string CourseName { get; set; }
         public int CourseYear { get; set; }
-        public List<CourseDepartment> CourseDepartments { get; set; }
-        public List<TeacherCourses> TeacherCourses { get; set; }
     }
 }
