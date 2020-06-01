@@ -1,0 +1,283 @@
+﻿@using studentApp2.Models
+@model studentApp2.Models.Event
+
+
+
+
+
+<br />
+<div class="jumbotron" style="padding:0rem 4rem 2rem 2rem">
+    <table class="table">
+        <h1 class="display-4">Catalog</h1>
+        <br />
+        <div>
+            @if (ViewBag.CourseList != null)
+            {
+                <div class="form-inline">
+                    <div class="form-group col-md-4">
+                        @Html.Label("Course: ", htmlAttributes: new { @class = "control-label col-md-3", @for = "CourseSelect", id = "label_course" })
+                        @Html.DropDownList("CourseSelect", (SelectList)ViewBag.CourseList, "Select Course", new { @class = "form-control input-lg", id = "select_course" })
+                    </div>
+                    <div class="form-group col-md-4">
+                        @Html.Label("Group: ", htmlAttributes: new { @class = "control-label col-md-3 d-none", @for = "GroupSelect", id = "label_group" })
+                        <select name="GroupSelect" id="select_group" class="form-control input-lg d-none"></select>
+                    </div>
+                </div>
+            }
+        </div>
+        <br />
+        <tr>
+        </tr>
+    </table>
+</div>
+
+
+
+@section Scripts {
+
+    <script>
+        var teacher = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.CourseList));
+        if (teacher != undefined) {
+            document.addEventListener("DOMContentLoaded", ready);
+            function ready() {
+                $('#select_course').prop('selectedIndex', 0);
+                $('tbody').addClass('d-none');
+            }
+
+            $('#select_course').on('change', function () {
+                getCatalog(this.value)
+            });
+
+            $('#select_group').on('change', function () {
+                const grades = JSON.parse(window.sessionStorage.getItem('grades'));
+                const filteredGrades = grades.filter(grade =>
+                    grade.GroupId == $("#select_group").val()
+                );
+                if ($("#select_group").val() != 'Select group')
+                    createCatalog(filteredGrades);
+                else
+                    createCatalog(grades);
+            });
+
+            function getCatalog(courseId) {
+                $.ajax({
+                    type: "GET",
+                    url: "getCourseGrades/" + courseId,
+                    dataType: "json",
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    },
+                    success: function (response) {
+                        window.sessionStorage.setItem('grades', JSON.stringify(response));
+                        $('tbody').removeClass('d-none');
+                        getGroups(courseId)
+                        createCatalog(response);
+                    }
+                });
+            }
+
+            function getGroups(courseId) {
+                $.ajax({
+                    type: "GET",
+                    url: "getGroupList/" + courseId,
+                    dataType: "json",
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    },
+                    success: function (response) {
+                        groups = response;
+                        var options = '<option>Select group</option>';
+                        for (var i = 0, len = groups.length; i < len; i++) {
+                            options += '<option value= "' + groups[i].GroupID + '">' + groups[i].GroupName + '</option>';
+                        }
+                        $('#select_group').html(options);
+                        if (groups.length > 1) {
+                            $('#label_group').removeClass('d-none')
+                            $('#select_group').removeClass('d-none')
+                        } else {
+                            $('#label_group').addClass('d-none')
+                            $('#select_group').addClass('d-none')
+                        }
+                    }
+                });
+            }
+
+            function editGrade(data) {
+                $.ajax({
+                    type: "POST",
+                    url: "Edit/" + data.GradeId,
+                    dataType: "json",
+                    data: data,
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    },
+                    success: function (response) {
+                        let date = new Date(response.date);
+                        let month = ((date.getMonth() + 1) < 10) ? "0" : "";
+                        month += date.getMonth() + 1;
+                        let day = ((date.getDate()) < 10) ? "0" : "";
+                        day += date.getDate();
+                        let formattedDate = day + '/' + month + '/' + date.getFullYear();
+                        $('#' + response.studentId + 'date').text(formattedDate);
+                    }
+                });
+            }
+
+        } else {
+            var grades = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.StudentGradeList));
+            createCatalog(grades);
+        }
+
+
+        function createCatalog(grades) {
+            if (teacher != undefined) {
+                $("tbody tr").remove();
+                var tr = document.createElement('tr');
+                var thGroup = document.createElement('th');
+                var thStudent = document.createElement('th');
+                var thDate = document.createElement('th');
+                var thGrade = document.createElement('th');
+                thGroup.innerHTML = 'Group';
+                thStudent.innerHTML = 'Student';
+                thDate.innerHTML = 'Date';
+                thGrade.innerHTML = 'Grade';
+                tr.appendChild(thGroup);
+                tr.appendChild(thStudent);
+                tr.appendChild(thDate);
+                tr.appendChild(thGrade);
+                $('tbody').append(tr);
+                grades.forEach(grade => {
+                    var tr = document.createElement('tr');
+                    tr.setAttribute('id', grade.Grade.StudentID);
+                    createColumn(tr, grade.GroupName)
+                    createColumn(tr, grade.StudentName)
+                    date = formatDate(grade.Grade.GradeDate)
+                    td = createColumn(tr, date)
+                    td.setAttribute('id', tr.id + 'date');
+                    grade = formatGrade(grade.Grade);
+                    var td = document.createElement('td');
+                    createDropdownList(td, grade.GradeID, grade)
+                    tr.appendChild(td);
+                    $('tbody').append(tr);
+                });
+                createButton($('tbody'), 'Edit');
+                createButton($('tbody'), 'Done');
+            }
+            else {
+                var tr = document.createElement('tr');
+                var thCourse = document.createElement('th');
+                var thDate = document.createElement('th');
+                var thGrade = document.createElement('th');
+                thCourse.innerHTML = 'Course';
+                thDate.innerHTML = 'Date';
+                thGrade.innerHTML = 'Grade';
+                tr.appendChild(thCourse);
+                tr.appendChild(thDate);
+                tr.appendChild(thGrade);
+                $('tbody').append(tr);
+                grades.forEach(grade => {
+                    var tr = document.createElement('tr');
+                    createColumn(tr, grade.CourseName)
+                    date = formatDate(grade.GradeDate)
+                    td = createColumn(tr, date)
+                    grade = formatGrade(grade.Grade);
+                    createColumn(tr, grade)
+                    $('tbody').append(tr);
+                });
+            }
+            
+
+
+        }
+
+
+
+        function formatGrade(grade) {
+            return (grade == '0' ? 'Not assigned' :
+                (grade == '-1' ? 'Absent' :
+                    (grade == '-2' ? 'Not elligible' : grade)));
+        }
+
+        function formatDate(date) {
+            let formattedDate = '';
+            if (date != null) {
+                formattedDate = date.split('T')[0].split('-')[2] + '/' +
+                    date.split('T')[0].split('-')[1] + '/' +
+                    date.split('T')[0].split('-')[0];
+            }
+            else
+                formattedDate = 'Not assigned';
+            return formattedDate;
+        }
+
+        function createColumn(parent,element){
+            var td = document.createElement('td');
+            td.appendChild(document.createTextNode(element));
+            parent.appendChild(td);
+            return td;
+        }
+
+        function createDropdownList(parent, gradeId, grade) {
+            var select = document.createElement('select')
+            select.id = gradeId
+            select.classList.add('form-control');
+            select.classList.add('grade-list');
+            select.disabled = 'disabled';
+            select.addEventListener("change", (event) => {
+                let date = new Date();
+                data = {
+                    GradeID: gradeId,
+                    StudentID: parent.studentId,
+                    CourseID: grade.CourseID,
+                    Grade: event.target.value,
+                    GradeDate: date.getMonth() + 1 + '/'
+                        + date.getDate() + '/' + date.getFullYear()
+                }
+                editGrade(data);
+            });
+
+            for (var i = -2; i <= 10; i++) {
+                var option = document.createElement("option");
+                option.value = i;
+                option.text = (i == -2 ? 'Not elligible' :
+                    (i == -1 ? 'Absent' :
+                        (i == 0 ? 'Not assigned' : i)
+                    ));
+                if (i == grade.Grade) {
+                    option.selected = 'selected';
+                }
+                select.appendChild(option);
+            }
+            parent.appendChild(select);
+        }
+
+        function createButton(parent,role){
+            var tr = document.createElement('tr');
+            var td = document.createElement('td')
+            var button = document.createElement('input');
+            button.setAttribute('id', 'button_'+role)
+            button.setAttribute('class', 'btn btn-primary')
+            button.setAttribute('value', role)
+            button.style.cursor = 'pointer';
+            if (role == 'Done')
+                button.setAttribute('class', 'btn btn-primary d-none')
+            button.addEventListener("click", () => {
+                if (role == 'Edit') {
+                    $('.grade-list').prop('disabled', false);
+                    $('#button_Done').removeClass('d-none');
+                    $('#button_Edit').addClass('d-none');
+                }
+                else {
+                    $('.grade-list').prop('disabled', true);
+                    $('#button_Done').addClass('d-none');
+                    $('#button_Edit').removeClass('d-none');
+                }
+            })
+            td.appendChild(button);
+            tr.appendChild(td);
+            parent.append(tr);
+        }
+
+    </script>
+}
+

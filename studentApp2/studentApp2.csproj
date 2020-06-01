@@ -418,12 +418,8 @@
     <Content Include="Views\Posts\Index.cshtml" />
     <Content Include="Views\Posts\Newsfeed.cshtml" />
     <Content Include="Views\Contacts\Index.cshtml" />
-    <Content Include="Views\Catalogs\Course.cshtml" />
-    <Content Include="Views\Catalogs\Delete.cshtml" />
-    <Content Include="Views\Catalogs\Edit.cshtml" />
-    <Content Include="Views\Catalogs\Student.cshtml" />
-    <Content Include="Views\Catalogs\Teacher.cshtml" />
     <Content Include="Views\Events\Index.cshtml" />
+    <Content Include="Views\Catalogs\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
