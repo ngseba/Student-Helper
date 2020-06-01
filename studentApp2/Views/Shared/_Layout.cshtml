@@ -60,14 +60,12 @@
                 @if (User.IsInRole("Teacher"))
                 {
                     <li style="margin-right: 30px;">@Html.ActionLink("Anouncements", "/", "Posts", null, new { @class = "nav-link" })</li>
-                    <li style="margin-right: 30px;">@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Grades", "/", "Catalogs", null, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
                 }
                 @if (User.IsInRole("Student"))
                 {
                     <li style="margin-right: 30px;">@Html.ActionLink("Anouncements", "/", "Posts", null, new { @class = "nav-link" })</li>
-                    <li style="margin-right: 30px;">@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Grades", "/", "Catalogs", null, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
                 }
             </ul>
             @Html.Partial("_LoginPartial")
