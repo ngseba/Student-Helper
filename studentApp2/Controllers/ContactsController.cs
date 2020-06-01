@@ -57,7 +57,9 @@ namespace studentApp2.Controllers
                         var students = db.Students.Where(s => s.GroupID == c.GroupID).ToList();
                         foreach(var s in students)
                         {
-                            contacts.Add(db.Users.First(u => u.Id == s.UserId));
+                            var studentUser = db.Users.First(u => u.Id == s.UserId);
+                            if(!contacts.Contains(studentUser))
+                            contacts.Add(studentUser);
                         }
                     }
                 }
@@ -78,7 +80,9 @@ namespace studentApp2.Controllers
                 {
                     var tc = db.TeacherCourses.First(t => t.TeacherCoursesID == item.TeacherCoursesID).TeacherID;
                     var teacher = db.Teachers.First(t => t.TeacherId == tc);
-                    contacts.Add(db.Users.First(u => u.Id == teacher.UserId));
+                    var teacherUser = db.Users.First(u => u.Id == teacher.UserId);
+                    if (!contacts.Contains(teacherUser))
+                    contacts.Add(teacherUser);
                 }
             }
             ViewBag.Contacts = contacts;

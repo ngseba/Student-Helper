@@ -4,16 +4,26 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-simple-sidebar/blob/master/LICENSE)
  */
 
+body{
+    overflow-x:hidden;
+}
 
 #sidebar-wrapper {
     min-height: 100vh;
+    width: 100px;
     -webkit-transition: margin .15s ease-out;
     -moz-transition: margin .15s ease-out;
     -o-transition: margin .15s ease-out;
     transition: margin .15s ease-out;
-    margin-left: 100%;
+    margin-left: 90%;
     height: 100px;
     overflow: hidden;
+    border-radius:20px;
+    padding:2rem 6rem 2rem 1rem;
+}
+
+#sidebar-wrapper h2 {
+    padding-left:1rem;
 }
 
 #page-content-wrapper {
@@ -36,6 +46,7 @@
         overflow: initial;
         box-shadow: 0px 0px 8px 0px grey;
         background-color: #c2c2c2;
+        z-index:1050 !important;
 
     }
 }

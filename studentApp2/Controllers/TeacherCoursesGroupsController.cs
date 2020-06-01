@@ -123,38 +123,35 @@ namespace studentApp2.Controllers
         
         public ActionResult GetCourseList (int groupID)
         {
-            var assignedCourses = db.Courses.Join(db.TeacherCourses,
-                course => course.CourseID,
-                tc => tc.CourseID,
-                (course, tc) => new { Course = course, TeacherCourses = tc }).Join(db.TeacherCoursesGroups,
-                tc => tc.TeacherCourses.TeacherCoursesID,
-                tcg => tcg.TeacherCoursesID,
-                (tc, tcg) => new { TeacherCourses = tc, TeacherCoursesGroup = tcg })
-                .Where(assignedCoursesList => assignedCoursesList.TeacherCoursesGroup.GroupID == groupID)
-                .Select(assignedCoursesList => assignedCoursesList.TeacherCoursesGroup.TeacherCourses.CourseID);
+            var assignedCourses = db.TeacherCoursesGroups
+                .Where(teacherCourseGroup => teacherCourseGroup.GroupID == groupID)
+                .Select(assignedCoursesList => assignedCoursesList.TeacherCourses.CourseID);
 
-            var courseList = db.Courses.Join(db.CourseDepartments,
-                course => course.CourseID,
-                cd => cd.CourseID,
-                (course, cd) => new { Course = course, CourseDepartment = cd }).Join(db.Groups,
-                department => department.CourseDepartment.DepartmentID,
+           
+            var courseList = db.CourseDepartments.Join(db.Groups,
+                courseDepartment => courseDepartment.DepartmentID,
                 group => group.DepartmentID,
-                (department, group) => new { CourseDepartment = department, Group = group }).Join(db.TeacherCourses,
-                courseGroup => courseGroup.CourseDepartment.Course.CourseID,
-                teacher => teacher.CourseID,
-                (courseGroup, teacher) => new { CourseGroup = courseGroup, TeacherCourses = teacher }).Join(db.Users,
-                teacherCoursesGroup => teacherCoursesGroup.TeacherCourses.Teacher.UserId,
-                user => user.Id,
-                (teacherCoursesGroup, user) => new { TeacherCoursesGroup = teacherCoursesGroup, User = user })
-                .Where(teacherCourseList => teacherCourseList.TeacherCoursesGroup.CourseGroup.Group.GroupID == groupID)
-                .Where(teacherCourseList => !assignedCourses.Contains(teacherCourseList.TeacherCoursesGroup.CourseGroup.CourseDepartment.Course.CourseID))
-                .Select(teacherCourseList => new SelectListItem
+                (courseDepartment,group) => new {
+                    CourseDepartment = courseDepartment,
+                    Group = group
+                }).Join(db.TeacherCourses,
+                courseDepartmentGroup => new { courseDepartmentGroup.CourseDepartment.CourseID},
+                teacherCourses => new { teacherCourses.CourseID },
+                (courseDepartmentGroup, teacherCourses) => new{
+                    CourseDepartmentGroup = courseDepartmentGroup,
+                    TeacherCourses = teacherCourses
+                }).Where(teacherCoursesGroupDepartments => teacherCoursesGroupDepartments.CourseDepartmentGroup.Group.GroupID == groupID)
+                .Where(teacherCoursesGroupDepartments => !assignedCourses.Contains(teacherCoursesGroupDepartments.TeacherCourses.CourseID))
+                .Where(teacherCoursesGroupDepartments => 
+                teacherCoursesGroupDepartments.CourseDepartmentGroup.Group.YearOfStudy == 
+                teacherCoursesGroupDepartments.CourseDepartmentGroup.CourseDepartment.Course.CourseYear)
+                .Select(teacherCourseList =>  new SelectListItem
                 {
-                    Value = teacherCourseList.TeacherCoursesGroup.TeacherCourses.TeacherCoursesID.ToString(),
-                    Text = teacherCourseList.TeacherCoursesGroup.CourseGroup.CourseDepartment.Course.CourseName + " - "
-                   + teacherCourseList.User.Firstname + " " + teacherCourseList.User.Lastname
-                }).ToList() ;
-
+                    Value = teacherCourseList.TeacherCourses.TeacherCoursesID.ToString(),
+                    Text = teacherCourseList.TeacherCourses.Course.CourseName + " - "
+                   + teacherCourseList.TeacherCourses.Teacher.User.Firstname + " " +
+                   teacherCourseList.TeacherCourses.Teacher.User.Lastname
+                }).ToList();
             return Json(courseList);
         }
 

@@ -19,25 +19,8 @@ namespace studentApp2.Controllers
         // GET: Events
         public ActionResult Index()
         {
-            if (User.IsInRole("Student"))
-            {
-                var userId = User.Identity.GetUserId();
-                var currentStudent = db.Students.FirstOrDefault(dbStudent => dbStudent.UserId == userId);
-                var groupEvents = db.GroupEvents.Where(groupEvent => groupEvent.GroupID == currentStudent.GroupID)
-                    .Select(groupEvent => new EventCalendarViewModel
-                    {
-                        title = groupEvent.Event.EventTitle,
-                        type = groupEvent.Event.EventType,
-                        description = groupEvent.Event.EventDescription,
-                        start = groupEvent.Event.EventDate,
-                        courseName = groupEvent.Event.TeacherCourses.Course.CourseName,
-                        teacherName = groupEvent.Event.TeacherCourses.Teacher.User.Firstname
-                        + " " + groupEvent.Event.TeacherCourses.Teacher.User.Lastname,
-                        teacherUsername = groupEvent.Event.TeacherCourses.Teacher.User.UserName
-                    }).ToList();
-                ViewBag.groupEvents = groupEvents;
-
-            }
+            if (User.IsInRole("Student"))        
+                ViewBag.StudentEvents = getStudentEvents();
             else
             if (User.IsInRole("Teacher"))
             {
@@ -46,6 +29,25 @@ namespace studentApp2.Controllers
             }
             return View();
 
+        }
+
+        public List<EventCalendarViewModel> getStudentEvents()
+        {
+            var userId = User.Identity.GetUserId();
+            var currentStudent = db.Students.FirstOrDefault(dbStudent => dbStudent.UserId == userId);
+            var studentEvents = db.GroupEvents.Where(groupEvent => groupEvent.GroupID == currentStudent.GroupID)
+                .Select(groupEvent => new EventCalendarViewModel
+                {
+                    title = groupEvent.Event.EventTitle,
+                    type = groupEvent.Event.EventType,
+                    description = groupEvent.Event.EventDescription,
+                    start = groupEvent.Event.EventDate,
+                    courseName = groupEvent.Event.TeacherCourses.Course.CourseName,
+                    teacherName = groupEvent.Event.TeacherCourses.Teacher.User.Firstname
+                    + " " + groupEvent.Event.TeacherCourses.Teacher.User.Lastname,
+                    teacherUsername = groupEvent.Event.TeacherCourses.Teacher.User.UserName
+                }).ToList();
+            return studentEvents;
         }
 
 

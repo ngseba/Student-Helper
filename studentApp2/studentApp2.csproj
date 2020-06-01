@@ -205,6 +205,22 @@
     <Compile Include="Migrations\202005281956588_update.Designer.cs">
       <DependentUpon>202005281956588_update.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202006010731188_tc unique.cs" />
+    <Compile Include="Migrations\202006010731188_tc unique.Designer.cs">
+      <DependentUpon>202006010731188_tc unique.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202006010733541_tcg-unique.cs" />
+    <Compile Include="Migrations\202006010733541_tcg-unique.Designer.cs">
+      <DependentUpon>202006010733541_tcg-unique.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202006010735044_unique.cs" />
+    <Compile Include="Migrations\202006010735044_unique.Designer.cs">
+      <DependentUpon>202006010735044_unique.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202006010741170_unique student-course.cs" />
+    <Compile Include="Migrations\202006010741170_unique student-course.Designer.cs">
+      <DependentUpon>202006010741170_unique student-course.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Catalog.cs" />
@@ -452,6 +468,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202005281956588_update.resx">
       <DependentUpon>202005281956588_update.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202006010731188_tc unique.resx">
+      <DependentUpon>202006010731188_tc unique.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202006010733541_tcg-unique.resx">
+      <DependentUpon>202006010733541_tcg-unique.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202006010735044_unique.resx">
+      <DependentUpon>202006010735044_unique.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202006010741170_unique student-course.resx">
+      <DependentUpon>202006010741170_unique student-course.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -17,10 +17,9 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="navbar-collapse collapse">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                     @if (User.IsInRole("Admin"))
                     {
-
                         <li class="nav-item dropdown" style="margin-right: 30px;">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 User administration
@@ -59,20 +58,16 @@
                     @if (User.IsInRole("Teacher"))
                     {
                         <li style="margin-right: 30px;">@Html.ActionLink("Anouncements", "/", "Posts", null, new { @class = "nav-link" })</li>
-                        <li>@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
-                        <li>@Html.ActionLink("Catalog", "/", "Catalogs", null, new { @class = "nav-link" })</li>
-                        <li>@Html.ActionLink("Events", "/", "Events", null, new { @class = "nav-link" })</li>
-
-
+                        <li style="margin-right: 30px;">@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
+                        <li style="margin-right: 30px;">@Html.ActionLink("Catalog", "/", "Catalogs", null, new { @class = "nav-link" })</li>
+                        <li style="margin-right: 30px;">@Html.ActionLink("Events", "/", "Events", null, new { @class = "nav-link" })</li>
                     }
                     @if (User.IsInRole("Student"))
                     {
                         <li style="margin-right: 30px;">@Html.ActionLink("Anouncements", "/", "Posts", null, new { @class = "nav-link" })</li>
-                        <li>@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
-                        <li>@Html.ActionLink("Catalog", "/", "Catalogs", null, new { @class = "nav-link" })</li>
-                        <li>@Html.ActionLink("Calendar", "/", "Events", null, new { @class = "nav-link" })</li>
-
-
+                        <li style="margin-right: 30px;">@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
+                        <li style="margin-right: 30px;">@Html.ActionLink("Catalog", "/", "Catalogs", null, new { @class = "nav-link" })</li>
+                        <li style="margin-right: 30px;">@Html.ActionLink("Events", "/", "Events", null, new { @class = "nav-link" })</li>
                     }
                 </ul>
                 @Html.Partial("_LoginPartial")
