@@ -95,13 +95,20 @@ namespace studentApp2.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "TeacherCoursesGroupID,TeacherCoursesID,GroupID")] TeacherCoursesGroup teacherCoursesGroup)
         {
-            var caca = JsonConvert.SerializeObject(teacherCoursesGroup).ToString();
-
-
-
             if (ModelState.IsValid)
             {
                 db.TeacherCoursesGroups.Add(teacherCoursesGroup);
+                db.SaveChanges();
+                var studentList = db.Students
+                    .Where(student => student.GroupID == teacherCoursesGroup.GroupID).ToList();
+                var courseId = db.TeacherCourses
+                    .Where(teacherCourses => teacherCourses.TeacherCoursesID == teacherCoursesGroup.TeacherCoursesID)
+                    .FirstOrDefault().CourseID;
+                foreach (var student in studentList)
+                {
+                    var grade = new Catalog { StudentID = student.StudentId, CourseID = courseId, Grade = 0, GradeDate = null };
+                    db.Catalogs.Add(grade);
+                }
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -116,38 +123,35 @@ namespace studentApp2.Controllers
         
         public ActionResult GetCourseList (int groupID)
         {
-            var assignedCourses = db.Courses.Join(db.TeacherCourses,
-                course => course.CourseID,
-                tc => tc.CourseID,
-                (course, tc) => new { Course = course, TeacherCourses = tc }).Join(db.TeacherCoursesGroups,
-                tc => tc.TeacherCourses.TeacherCoursesID,
-                tcg => tcg.TeacherCoursesID,
-                (tc, tcg) => new { TeacherCourses = tc, TeacherCoursesGroup = tcg })
-                .Where(assignedCoursesList => assignedCoursesList.TeacherCoursesGroup.GroupID == groupID)
-                .Select(assignedCoursesList => assignedCoursesList.TeacherCoursesGroup.TeacherCourses.CourseID);
+            var assignedCourses = db.TeacherCoursesGroups
+                .Where(teacherCourseGroup => teacherCourseGroup.GroupID == groupID)
+                .Select(assignedCoursesList => assignedCoursesList.TeacherCourses.CourseID);
 
-            var courseList = db.Courses.Join(db.CourseDepartments,
-                course => course.CourseID,
-                cd => cd.CourseID,
-                (course, cd) => new { Course = course, CourseDepartment = cd }).Join(db.Groups,
-                department => department.CourseDepartment.DepartmentID,
+           
+            var courseList = db.CourseDepartments.Join(db.Groups,
+                courseDepartment => courseDepartment.DepartmentID,
                 group => group.DepartmentID,
-                (department, group) => new { CourseDepartment = department, Group = group }).Join(db.TeacherCourses,
-                courseGroup => courseGroup.CourseDepartment.Course.CourseID,
-                teacher => teacher.CourseID,
-                (courseGroup, teacher) => new { CourseGroup = courseGroup, TeacherCourses = teacher }).Join(db.Users,
-                teacherCoursesGroup => teacherCoursesGroup.TeacherCourses.Teacher.UserId,
-                user => user.Id,
-                (teacherCoursesGroup, user) => new { TeacherCoursesGroup = teacherCoursesGroup, User = user })
-                .Where(teacherCourseList => teacherCourseList.TeacherCoursesGroup.CourseGroup.Group.GroupID == groupID)
-                .Where(teacherCourseList => !assignedCourses.Contains(teacherCourseList.TeacherCoursesGroup.CourseGroup.CourseDepartment.Course.CourseID))
-                .Select(teacherCourseList => new SelectListItem
+                (courseDepartment,group) => new {
+                    CourseDepartment = courseDepartment,
+                    Group = group
+                }).Join(db.TeacherCourses,
+                courseDepartmentGroup => new { courseDepartmentGroup.CourseDepartment.CourseID},
+                teacherCourses => new { teacherCourses.CourseID },
+                (courseDepartmentGroup, teacherCourses) => new{
+                    CourseDepartmentGroup = courseDepartmentGroup,
+                    TeacherCourses = teacherCourses
+                }).Where(teacherCoursesGroupDepartments => teacherCoursesGroupDepartments.CourseDepartmentGroup.Group.GroupID == groupID)
+                .Where(teacherCoursesGroupDepartments => !assignedCourses.Contains(teacherCoursesGroupDepartments.TeacherCourses.CourseID))
+                .Where(teacherCoursesGroupDepartments => 
+                teacherCoursesGroupDepartments.CourseDepartmentGroup.Group.YearOfStudy == 
+                teacherCoursesGroupDepartments.CourseDepartmentGroup.CourseDepartment.Course.CourseYear)
+                .Select(teacherCourseList =>  new SelectListItem
                 {
-                    Value = teacherCourseList.TeacherCoursesGroup.TeacherCourses.TeacherCoursesID.ToString(),
-                    Text = teacherCourseList.TeacherCoursesGroup.CourseGroup.CourseDepartment.Course.CourseName + " - "
-                   + teacherCourseList.User.Firstname + " " + teacherCourseList.User.Lastname
-                }).ToList() ;
-
+                    Value = teacherCourseList.TeacherCourses.TeacherCoursesID.ToString(),
+                    Text = teacherCourseList.TeacherCourses.Course.CourseName + " - "
+                   + teacherCourseList.TeacherCourses.Teacher.User.Firstname + " " +
+                   teacherCourseList.TeacherCourses.Teacher.User.Lastname
+                }).ToList();
             return Json(courseList);
         }
 
@@ -177,7 +181,46 @@ namespace studentApp2.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(teacherCoursesGroup).State = EntityState.Modified;
+                var teacherCoursesID = db.TeacherCoursesGroups
+                    .Where(dbTeacherCoursesGroup => dbTeacherCoursesGroup.TeacherCoursesGroupID == teacherCoursesGroup.TeacherCoursesGroupID)
+                    .Select(dbTeacherCoursesGroup => dbTeacherCoursesGroup.TeacherCoursesID);
+                var courseId = db.TeacherCourses
+                   .Where(teacherCourses => teacherCourses.TeacherCoursesID == teacherCoursesGroup.TeacherCoursesID)
+                   .FirstOrDefault().CourseID;
+                var groupId = db.TeacherCoursesGroups
+                   .Where(dbTeacherCoursesGroup => dbTeacherCoursesGroup.TeacherCoursesGroupID == teacherCoursesGroup.TeacherCoursesGroupID)
+                   .FirstOrDefault().GroupID;
+                var gradeList = db.Catalogs.Join(db.Students,
+                    Catalog => Catalog.StudentID,
+                    Student => Student.StudentId,
+                    (Catalog, Student) => new { Student = Student, Catalog = Catalog })
+                    .Where(grade => grade.Catalog.CourseID == courseId)
+                    .Where(grade => grade.Student.GroupID == groupId)
+                    .Select(studentCatalog => studentCatalog.Catalog)
+                    .ToList();
+                foreach (var grade in gradeList)
+                {
+                    var dbGrade = db.Catalogs.Where(catalog => catalog.GradeID == grade.GradeID).FirstOrDefault();
+                    db.Catalogs.Remove(dbGrade);
+                    db.SaveChanges();
+                }
+                var newTeacherCoursesGroup = db.TeacherCoursesGroups
+                    .Where(dbTcg => dbTcg.TeacherCoursesGroupID == teacherCoursesGroup.TeacherCoursesGroupID)
+                    .FirstOrDefault();
+                newTeacherCoursesGroup.TeacherCoursesGroupID = teacherCoursesGroup.TeacherCoursesGroupID;
+                newTeacherCoursesGroup.TeacherCoursesID = teacherCoursesGroup.TeacherCoursesID;
+                newTeacherCoursesGroup.GroupID = teacherCoursesGroup.GroupID;
+                db.SaveChanges();
+                var studentList = db.Students
+                    .Where(student => student.GroupID == newTeacherCoursesGroup.GroupID).ToList();
+                courseId = db.TeacherCourses
+                    .Where(teacherCourses => teacherCourses.TeacherCoursesID == newTeacherCoursesGroup.TeacherCoursesID)
+                    .FirstOrDefault().CourseID;
+                foreach (var student in studentList)
+                {
+                    var grade = new Catalog { StudentID = student.StudentId, CourseID = courseId, Grade = 0, GradeDate = null };
+                    db.Catalogs.Add(grade);
+                }
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }

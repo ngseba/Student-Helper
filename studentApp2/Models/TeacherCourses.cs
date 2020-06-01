@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -10,10 +11,13 @@ namespace studentApp2.Models
     {
         [Key]
         public int TeacherCoursesID { get; set; }
+        [Index("UNIQUE_Teacher_Course", 1, IsUnique = true)]
         public int CourseID { get; set; }
-        public Course Course { get; set; }
+        [Index("UNIQUE_Teacher_Course", 2, IsUnique = true)]
         public int TeacherID { get; set; }
-        public Teacher Teacher { get; set; }
+        public virtual Course Course { get; set; }
+
+        public virtual Teacher Teacher { get; set; }
 
         public List<TeacherCoursesGroup> TeacherCoursesGroups { get; set; }
         public override string ToString()

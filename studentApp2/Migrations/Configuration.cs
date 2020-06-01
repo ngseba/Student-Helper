@@ -9,7 +9,7 @@ namespace studentApp2.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
         }
 
         protected override void Seed(studentApp2.Models.ApplicationDbContext context)
