@@ -159,7 +159,7 @@ namespace studentApp2.Controllers
         {
             if (ModelState.IsValid)
             {
-                catalog.GradeDate = DateTime.Today;
+                catalog.GradeDate = DateTime.UtcNow;
                 db.Catalogs.Add(catalog);
                 db.SaveChanges();
                 return RedirectToAction("Index");
