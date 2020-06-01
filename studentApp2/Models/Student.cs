@@ -13,6 +13,8 @@ namespace studentApp2.Models
         public int StudentId { get; set; }
         public int? GroupID { get; set; }
         public virtual Group Group { get; set; }
+
+        public virtual ApplicationUser User { get; set; }
         [Required]
         public string UserId { get; set; }
     }

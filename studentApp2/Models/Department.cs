@@ -9,7 +9,5 @@ namespace studentApp2.Models
     {
         public int DepartmentID { get; set; }
         public string DepartmentName { get; set; }
-        public virtual ICollection<Group> Groups { get; set; }
-        public List<CourseDepartment> CourseDepartments { get; set; }
     }
 }
