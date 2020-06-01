@@ -42,117 +42,89 @@ namespace studentApp2.Controllers
         }
 
         // GET: Catalogs/ProcessModelling
+        [Authorize(Roles = "Student,Teacher")]
         public ActionResult Index(string CourseName)
         {
-            if (User.IsInRole("Student"))
-                return RedirectToAction("Student");
-            return RedirectToAction("Teacher");
-        }
+            //if (User.IsInRole("Student"))
+            //    return RedirectToAction("Student");
+            //return RedirectToAction("Teacher");
+            if (User.IsInRole("Teacher"))
+            {
+                ViewBag.CourseList = new SelectList(getCourseList(), "CourseID", "CourseName");
 
-        public ActionResult Teacher(int? id)
-        {
-            var userId = User.Identity.GetUserId();
-            var course = id;
-            var teacher = db.Teachers.FirstOrDefault(dbTeacher => dbTeacher.UserId == userId);
-
-            ViewBag.courseList = db.Courses.Join(db.TeacherCourses,
-                c => c.CourseID,
-                tc => tc.CourseID,
-                (c, tc) => new { Course = c, TeacherCourses = tc })
-                .Where(ctc => ctc.TeacherCourses.TeacherID == teacher.TeacherId)
-                .ToList().Select(teacherCourse => teacherCourse.Course).ToList();
-
+            }
+            else
+            {
+                ViewBag.StudentGradeList = getStudentGrades();
+            }
             return View();
         }
 
-        public ActionResult Student()
+     
+
+        public List<Course> getCourseList()
         {
             var userId = User.Identity.GetUserId();
-            var currentStudent = db.Students.FirstOrDefault(dbStudent => dbStudent.UserId == userId);
-            var dbGrades = db.Catalogs.Join(db.Courses, grade => grade.CourseID, course => course.CourseID, (grade, course)
-                  => new { Grade = grade, course.CourseName }).Where(grade => grade.Grade.StudentID == currentStudent.StudentId);
+            var currentTeacher = db.Teachers.FirstOrDefault(dbTeacher => dbTeacher.UserId == userId);
+            var courseList = db.TeacherCourses
+                .Where(teacherCourses => teacherCourses.TeacherID == currentTeacher.TeacherId)
+                .Select(teacherCourses => teacherCourses.Course)
+                .ToList();
 
-            var student = new CatalogStudentViewModel();
-            var grades = new List<GradeStudentViewModel>();
-            foreach (var dbGrade in dbGrades)
-            {
-                try
-                {
-                    var grade = new GradeStudentViewModel();
-                    grade.CourseName = dbGrade.CourseName;
-                    grade.Grade = dbGrade.Grade.Grade;
-                    grade.GradeDate = dbGrade.Grade.GradeDate;
-                    grades.Add(grade);
-                }
-                catch (Exception e) { }
-            }
-            student.grades = grades;
-            return View(student);
+
+            return courseList;
+
+
         }
 
+        [Authorize(Roles = "Teacher")]
 
-        public async Task<ActionResult> Course(int id)
-        {
-            var students = getStudentList(id);
-            ApplicationUser au;
-            var studentTable = new List<UserStudentViewModel>();
-            foreach (var student in students)
-            {
-                var usvm = new UserStudentViewModel();
-                au = await UserManager.FindByIdAsync(student.Student.Student.UserId);
-                usvm.StudentId = student.Student.Student.StudentId;
-                usvm.Fname = au.Firstname;
-                usvm.Lname = au.Lastname;
-                usvm.GroupName = student.Student.Student.Group.GroupName;
-                try
-                {
-                    usvm.Grade = student.Grade.Grade;
-                    usvm.GradeDate = student.Grade.GradeDate.ToString().Split(' ')[0];
-                }
-                catch (Exception e) { }
-                studentTable.Add(usvm);
-            }
-            var ctvm = new CatalogTeacherViewModel();
-            ctvm.Students = studentTable;
-            ctvm.CourseID = id;
-            ctvm.CourseName = db.Courses.FirstOrDefault(course => course.CourseID == id).CourseName;
-            return View(ctvm);
-        }
-
-        public dynamic getStudentList(int courseID)
+        public String getGroupList(int id)
         {
             var userId = User.Identity.GetUserId();
-            var teacher = db.Teachers.FirstOrDefault(dbTeacher => dbTeacher.UserId == userId);
-            var studentGrades = db.Students.GroupJoin(db.Catalogs,
-                s => s.StudentId,
-                grade => grade.StudentID,
-                (s, g) => new { Student = s, Grade = g })
-                .SelectMany(g => g.Grade.DefaultIfEmpty(),
-                (s, grade) => new { Student = s, Grade = grade });
-            var studentGroups = studentGrades.Join(db.Groups,
-                s => s.Student.Student.GroupID,
-                g => g.GroupID,
-                (s, g) => new { Student = s, Group = g });
-            var studGroupTCG = studentGroups
-                .Join(db.TeacherCoursesGroups,
-                sg => sg.Group.GroupID,
-                tcg => tcg.GroupID,
-                (sg, tcg) => new { StudentGroup = sg, TeacherCoursesGroup = tcg });
-            var students = studGroupTCG
-                .Join(db.TeacherCourses,
-                stcg => stcg.TeacherCoursesGroup.TeacherCoursesID,
-                tc => tc.TeacherCoursesID,
-                (stcg, tc) => new { StudentTeacherCoursesGroup = stcg, TeacherCourses = tc })
-              .Where(stcg2 => stcg2.TeacherCourses.TeacherID == teacher.TeacherId && stcg2.TeacherCourses.CourseID == courseID)
-              .ToList().Select(student => student.StudentTeacherCoursesGroup.StudentGroup.Student).ToList();
-            return students;
+            var currentTeacher = db.Teachers.FirstOrDefault(dbStudent => dbStudent.UserId == userId);
+            var teacherCourseGroupList = db.TeacherCoursesGroups
+                .Where(teacherCourseGroup => teacherCourseGroup.TeacherCourses.TeacherID == currentTeacher.TeacherId
+                && teacherCourseGroup.TeacherCourses.CourseID == id)
+                .Select(teacherCourseGroup => new {
+                    GroupID = teacherCourseGroup.Group.GroupID,
+                    GroupName = teacherCourseGroup.Group.GroupName
+                }).ToList();
+
+            string output = JsonConvert.SerializeObject(teacherCourseGroupList);
+            return output;
+
         }
 
+        public String getCourseGrades(int id)
+        {
+            var userId = User.Identity.GetUserId();
+            var currentTeacher = db.Teachers.FirstOrDefault(dbStudent => dbStudent.UserId == userId);
+            var gradeList = db.TeacherCoursesGroups.Join(db.Students,
+                teacherCoursesGroup => teacherCoursesGroup.GroupID,
+                student => student.GroupID,
+                (teacherCoursesGroup, student) => new { TeacherCoursesGroup = teacherCoursesGroup, Student = student })
+                .Where(StudentsGroup => StudentsGroup.TeacherCoursesGroup.TeacherCourses.TeacherID == currentTeacher.TeacherId &&
+                StudentsGroup.TeacherCoursesGroup.TeacherCourses.CourseID == id).Join(db.Catalogs,
+                StudentsGroup => StudentsGroup.Student.StudentId,
+                Catalog => Catalog.StudentID,
+                (StudentsGroup, Catalog) => new {StudentGroup = StudentsGroup, Catalog = Catalog })
+                .Where(catalog => catalog.Catalog.CourseID == id).Join(db.Users,
+                StudentGroupCatalog => StudentGroupCatalog.StudentGroup.Student.UserId,
+                User => User.Id,
+                (StudentGroupCatalog, User) => new { StudentGroupCatalog = StudentGroupCatalog, User = User })
+                .Select(Catalog => new
+                {
+                    GroupName = Catalog.StudentGroupCatalog.StudentGroup.TeacherCoursesGroup.Group.GroupName,
+                    StudentName = Catalog.StudentGroupCatalog.StudentGroup.Student.User.Firstname + " " 
+                    + Catalog.StudentGroupCatalog.StudentGroup.Student.User.Lastname,
+                    Grade = Catalog.StudentGroupCatalog.Catalog,
+                    GroupId = Catalog.StudentGroupCatalog.StudentGroup.TeacherCoursesGroup.Group.GroupID
 
+                }).ToList();
+            return JsonConvert.SerializeObject(gradeList); ;
+        }
 
-        // POST: Catalogs/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
 
         public ActionResult Create([Bind(Include = "GradeID,StudentID,CourseID,Grade")] Catalog catalog)
@@ -168,89 +140,52 @@ namespace studentApp2.Controllers
             return View(catalog);
         }
 
-        // GET: Catalogs/Edit/5
-        public async Task<ActionResult> Edit(int id)
-        {
-            var students = getStudentList(id);
-            ApplicationUser au;
-            var studentTable = new List<UserStudentViewModel>();
-            foreach (var student in students)
-            {
-                var usvm = new UserStudentViewModel();
-                au = await UserManager.FindByIdAsync(student.Student.Student.UserId);
-                usvm.StudentId = student.Student.Student.StudentId;
-                usvm.Fname = au.Firstname;
-                usvm.Lname = au.Lastname;
-                usvm.GroupName = student.Student.Student.Group.GroupName;
-                try
-                {
-                    usvm.Grade = student.Grade.Grade;
-                    usvm.GradeDate = student.Grade.GradeDate.ToString().Split(' ')[0];
-                    usvm.GradeID = student.Grade.GradeID;
-                }
-                catch (Exception e) { }
-                studentTable.Add(usvm);
-            }
-            var ctvm = new CatalogTeacherViewModel();
-            ctvm.Students = studentTable;
-            ctvm.CourseID = id;
-            return View(ctvm);
-        }
-
-        // POST: Catalogs/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        public ActionResult Edit([Bind(Include = "GradeID,StudentID,CourseID,Grade")] Catalog catalog)
+        public JsonResult Edit([Bind(Include = "GradeID,StudentID,CourseID,Grade,GradeDate")] Catalog catalog)
         {
-            var gradeId = catalog.GradeID;
-            var catalogstud = catalog.StudentID;
-            var catalogCourseID = catalog.CourseID;
-            var cataloggrade = catalog.Grade;
+            Catalog grade = db.Catalogs.Where(dbGrade => dbGrade.GradeID == catalog.GradeID)
+                .FirstOrDefault();
             if (ModelState.IsValid)
             {
-                try
+                grade.Grade = catalog.Grade;
+                grade.GradeDate = catalog.GradeDate;
+                db.SaveChanges();
+                var response = new
                 {
-                    var updateRecord = db.Catalogs.Where(grade => grade.StudentID == catalog.StudentID).FirstOrDefault(grade => grade.CourseID == catalog.CourseID);
-                    updateRecord.Grade = catalog.Grade;
-                    updateRecord.GradeDate = DateTime.Today;
-                    db.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    ((IObjectContextAdapter)db).ObjectContext.Refresh(RefreshMode.ClientWins, db.Catalogs);
-                    db.SaveChanges();
-                }
-
-                return RedirectToAction("Index");
+                    info = "Success",
+                    date = grade.GradeDate.ToString(),
+                    studentId = grade.StudentID
+                };
+                return Json(response);
             }
-            return View();
+            else
+            {
+                var response = new
+                {
+                    info = "An error has occured in upgrading grade"
+                };
+                return Json(response);
+            }
         }
 
-        // GET: Catalogs/Delete/5
-        public ActionResult Delete(int? id)
+        public List<GradeStudentViewModel> getStudentGrades()
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Catalog catalog = db.Catalogs.Find(id);
-            if (catalog == null)
-            {
-                return HttpNotFound();
-            }
-            return View(catalog);
-        }
+            var userId = User.Identity.GetUserId();
+            var currentStudent = db.Students.FirstOrDefault(dbStudent => dbStudent.UserId == userId);
+           
+            var grades = db.Catalogs.Join(db.Courses,
+                Catalog => Catalog.CourseID,
+                Course => Course.CourseID,
+                (Catalog,Course) => new { Catalog = Catalog,Course = Course})
+                .Where(grade => grade.Catalog.StudentID == currentStudent.StudentId)
+                .Select(grade =>
+            new GradeStudentViewModel { 
+                CourseName = grade.Course.CourseName,
+                GradeDate = grade.Catalog.GradeDate,
+                Grade = grade.Catalog.Grade
+            }).ToList();
 
-        // POST: Catalogs/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Catalog catalog = db.Catalogs.Find(id);
-            db.Catalogs.Remove(catalog);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            return grades;
         }
 
         protected override void Dispose(bool disposing)
