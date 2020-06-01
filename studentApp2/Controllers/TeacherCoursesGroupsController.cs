@@ -99,6 +99,17 @@ namespace studentApp2.Controllers
             {
                 db.TeacherCoursesGroups.Add(teacherCoursesGroup);
                 db.SaveChanges();
+                var studentList = db.Students
+                    .Where(student => student.GroupID == teacherCoursesGroup.GroupID).ToList();
+                var courseId = db.TeacherCourses
+                    .Where(teacherCourses => teacherCourses.TeacherCoursesID == teacherCoursesGroup.TeacherCoursesID)
+                    .FirstOrDefault().CourseID;
+                foreach (var student in studentList)
+                {
+                    var grade = new Catalog { StudentID = student.StudentId, CourseID = courseId, Grade = 0, GradeDate = null };
+                    db.Catalogs.Add(grade);
+                }
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -173,7 +184,46 @@ namespace studentApp2.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(teacherCoursesGroup).State = EntityState.Modified;
+                var teacherCoursesID = db.TeacherCoursesGroups
+                    .Where(dbTeacherCoursesGroup => dbTeacherCoursesGroup.TeacherCoursesGroupID == teacherCoursesGroup.TeacherCoursesGroupID)
+                    .Select(dbTeacherCoursesGroup => dbTeacherCoursesGroup.TeacherCoursesID);
+                var courseId = db.TeacherCourses
+                   .Where(teacherCourses => teacherCourses.TeacherCoursesID == teacherCoursesGroup.TeacherCoursesID)
+                   .FirstOrDefault().CourseID;
+                var groupId = db.TeacherCoursesGroups
+                   .Where(dbTeacherCoursesGroup => dbTeacherCoursesGroup.TeacherCoursesGroupID == teacherCoursesGroup.TeacherCoursesGroupID)
+                   .FirstOrDefault().GroupID;
+                var gradeList = db.Catalogs.Join(db.Students,
+                    Catalog => Catalog.StudentID,
+                    Student => Student.StudentId,
+                    (Catalog, Student) => new { Student = Student, Catalog = Catalog })
+                    .Where(grade => grade.Catalog.CourseID == courseId)
+                    .Where(grade => grade.Student.GroupID == groupId)
+                    .Select(studentCatalog => studentCatalog.Catalog)
+                    .ToList();
+                foreach (var grade in gradeList)
+                {
+                    var dbGrade = db.Catalogs.Where(catalog => catalog.GradeID == grade.GradeID).FirstOrDefault();
+                    db.Catalogs.Remove(dbGrade);
+                    db.SaveChanges();
+                }
+                var newTeacherCoursesGroup = db.TeacherCoursesGroups
+                    .Where(dbTcg => dbTcg.TeacherCoursesGroupID == teacherCoursesGroup.TeacherCoursesGroupID)
+                    .FirstOrDefault();
+                newTeacherCoursesGroup.TeacherCoursesGroupID = teacherCoursesGroup.TeacherCoursesGroupID;
+                newTeacherCoursesGroup.TeacherCoursesID = teacherCoursesGroup.TeacherCoursesID;
+                newTeacherCoursesGroup.GroupID = teacherCoursesGroup.GroupID;
+                db.SaveChanges();
+                var studentList = db.Students
+                    .Where(student => student.GroupID == newTeacherCoursesGroup.GroupID).ToList();
+                courseId = db.TeacherCourses
+                    .Where(teacherCourses => teacherCourses.TeacherCoursesID == newTeacherCoursesGroup.TeacherCoursesID)
+                    .FirstOrDefault().CourseID;
+                foreach (var student in studentList)
+                {
+                    var grade = new Catalog { StudentID = student.StudentId, CourseID = courseId, Grade = 0, GradeDate = null };
+                    db.Catalogs.Add(grade);
+                }
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }

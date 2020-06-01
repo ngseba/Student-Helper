@@ -11,7 +11,7 @@ namespace studentApp2.Models
         [Key]
         public int TeacherCoursesGroupID { get; set; }
         public int TeacherCoursesID { get; set; }
-        public TeacherCourses TeacherCourses { get; set; }
+        public virtual TeacherCourses TeacherCourses { get; set; }
         public int GroupID { get; set; }
         public virtual Group Group { get; set; }
     }
