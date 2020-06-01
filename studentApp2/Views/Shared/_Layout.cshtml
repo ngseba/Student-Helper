@@ -74,12 +74,33 @@
             </div>
         </nav>
 
-        <div class="container body-content">
-            @RenderBody()
-            <hr />
-            <footer>
-                <p>&copy; @DateTime.Now.Year - UniHelp</p>
-            </footer>
+                    <li class="nav-item dropdown" style="margin-right: 30px;">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Academic administration
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <span>@Html.ActionLink("Courses", "/", "Courses", null, new { @class = "dropdown-item" })</span>
+                            <span>@Html.ActionLink("Assign courses to departments", "/", "CourseDepartments", null, new { @class = "dropdown-item" })</span>
+                            <span>@Html.ActionLink("Assign teachers to courses", "/", "TeacherCourses", null, new { @class = "dropdown-item" })</span>
+                            <span>@Html.ActionLink("Assign courses to groups", "/", "TeacherCoursesGroups", null, new { @class = "dropdown-item" })</span>
+                        </div>
+                    </li>
+                    <li>@Html.ActionLink("Posts", "/", "Posts", null, new { @class = "nav-link" })</li>
+                }
+                @if (User.IsInRole("Teacher"))
+                {
+                    <li style="margin-right: 30px;">@Html.ActionLink("Anouncements", "/", "Posts", null, new { @class = "nav-link" })</li>
+                    <li style="margin-right: 30px;">@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Grades", "/", "Catalogs", null, new { @class = "nav-link" })</li>
+                }
+                @if (User.IsInRole("Student"))
+                {
+                    <li style="margin-right: 30px;">@Html.ActionLink("Anouncements", "/", "Posts", null, new { @class = "nav-link" })</li>
+                    <li style="margin-right: 30px;">@Html.ActionLink("Contacts", "/", "Contacts", null, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Grades", "/", "Catalogs", null, new { @class = "nav-link" })</li>
+                }
+            </ul>
+            @Html.Partial("_LoginPartial")
         </div>
 
 
