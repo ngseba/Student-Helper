@@ -9,9 +9,10 @@ namespace studentApp2.Models
     public class Teacher
     {
         public int TeacherId { get; set; }
+
+        public List<TeacherCourses> TeacherCourses { get; set; }
         [Required]
         public string UserId { get; set; }
-        public virtual ApplicationUser User{get;set;}
     }
 
     public class UserTeacherViewModel
