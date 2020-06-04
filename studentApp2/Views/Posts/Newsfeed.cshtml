@@ -18,7 +18,16 @@
         <div class="article-container">
             <div class="article-container-title">
                 <h1 class="article-container-title-person">Category: @article.PostType.ToString()</h1>
-                <h1 class="article-container-title-person">Author: @article.AuthorName.ToString()</h1>
+                <h1 class="article-container-title-person">
+                    Author: @if (!String.IsNullOrEmpty(article.AuthorName))
+                    {
+                        @article.AuthorName
+                    }
+                    else
+                    {
+                        <span>Unknown</span>
+                    }
+                </h1>
                 <div class="icon"><img height="16" width="16" src="https://p7.hiclipart.com/preview/340/956/944/computer-icons-user-profile-head-ico-download.jpg"></div>
             </div>
         <div class="article-container-content">
